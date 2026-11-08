@@ -1,0 +1,50 @@
+---
+import { quotes } from '../data/encyclical';
+import { refButton } from '../lib/rich';
+---
+<section id="frases">
+  <div class="wrap">
+    <h2>Frases para citar</h2>
+    <div class="quotes">
+      {quotes.map((q, i) => (
+        <figure id={`frase-${i + 1}`}>
+          <blockquote>“{q.text}”</blockquote>
+          <figcaption>
+            <Fragment set:html={refButton(q.ref)} />
+            <button type="button" class="share" data-share={`“${q.text}” (Magnifica Humanitas, § ${q.ref})`} data-anchor={`frase-${i + 1}`}>Compartir</button>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.quotes{display:grid;grid-template-columns:repeat(2,1fr);gap:40px 48px;margin-top:36px}
+figure{margin:0}
+blockquote{font-size:1.25rem;line-height:1.5}
+figcaption{margin-top:10px;display:flex;align-items:center;gap:14px}
+.share{background:none;border:0;padding:0;cursor:pointer;font-family:var(--display);font-stretch:85%;font-size:.9rem;color:var(--muted);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:.2em}
+.share:hover{color:var(--ink);text-decoration-color:var(--gold)}
+@media (max-width:820px){.quotes{grid-template-columns:1fr}}
+</style>
+
+<script>
+  import { toast } from '../scripts/toast';
+  document.querySelectorAll<HTMLButtonElement>('.share').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const url = `${location.origin}${location.pathname}#${b.dataset.anchor}`;
+      const text = b.dataset.share!;
+      if (navigator.share && matchMedia('(hover:none)').matches) {
+        try { await navigator.share({ text, url }); } catch { /* cancelado */ }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        toast('Cita copiada con su enlace');
+      } catch {
+        toast('No se pudo copiar. Seleccioná el texto a mano.');
+      }
+    }),
+  );
+</script>

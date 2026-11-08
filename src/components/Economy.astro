@@ -1,0 +1,63 @@
+---
+import { economy as e } from '../data/encyclical';
+import { rich, refButton } from '../lib/rich';
+---
+<section id="economia">
+  <div class="wrap">
+    <h2>Economía: dos lecturas posibles</h2>
+    <p class="measure">{e.intro}</p>
+
+    <div class="switch" role="group" aria-label="Resaltar una lectura">
+      <button type="button" aria-pressed="false" data-side="more">Resaltar: más Estado</button>
+      <button type="button" aria-pressed="false" data-side="less">Resaltar: menos Estado</button>
+    </div>
+
+    <div class="ledger" data-ledger>
+      {[['more', e.moreState], ['less', e.lessState]].map(([side, col]) => (
+        <div class="col" data-col={side as string}>
+          <h3>{(col as typeof e.moreState).title}</h3>
+          <ul>
+            {(col as typeof e.moreState).items.map((it) => (
+              <li>{it.text} <Fragment set:html={refButton(it.ref)} /></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <div class="fixed">
+      <h3>{e.fixed.title}</h3>
+      <p set:html={rich(e.fixed.body)} />
+    </div>
+  </div>
+</section>
+
+<style>
+.switch{display:inline-flex;margin-top:24px;border:1px solid var(--rule);background:var(--paper)}
+.switch button{background:none;border:0;padding:8px 14px;cursor:pointer;font-family:var(--display);font-stretch:85%;color:var(--muted)}
+.switch button + button{border-left:1px solid var(--rule)}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--vellum)}
+.ledger{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:28px}
+.col{transition:opacity .3s}
+/* Al elegir una lectura, la otra columna se apaga: se ve qué párrafos usa cada lado */
+.ledger[data-focus="more"] [data-col="less"],
+.ledger[data-focus="less"] [data-col="more"]{opacity:.32}
+h3{border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:12px}
+ul{list-style:none;margin:0;padding:0}
+li{padding:10px 0;border-bottom:1px solid var(--rule)}
+.fixed{margin-top:36px;padding:24px 28px;background:var(--paper);border:1px solid var(--rule);max-width:46em}
+.fixed h3{border:0;padding:0;margin-bottom:10px}
+@media (max-width:820px){.ledger{grid-template-columns:1fr}}
+</style>
+
+<script>
+  const ledger = document.querySelector<HTMLElement>('[data-ledger]');
+  const btns = document.querySelectorAll<HTMLButtonElement>('.switch button');
+  btns.forEach((b) =>
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') !== 'true';
+      btns.forEach((x) => x.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', String(on));
+      if (on) ledger!.dataset.focus = b.dataset.side; else delete ledger!.dataset.focus;
+    }),
+  );
+</script>

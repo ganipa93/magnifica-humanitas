@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Toc from '../components/Toc.astro';
+import Summary from '../components/Summary.astro';
+import TwoCities from '../components/TwoCities.astro';
+import Novelties from '../components/Novelties.astro';
+import Economy from '../components/Economy.astro';
+import Tensions from '../components/Tensions.astro';
+import Chapters from '../components/Chapters.astro';
+import Quotes from '../components/Quotes.astro';
+import Footer from '../components/Footer.astro';
+import Search from '../components/Search.astro';
+import RefPopover from '../components/RefPopover.astro';
+---
+<Base>
+  <Hero />
+  <Toc />
+  <main id="contenido">
+    <Summary />
+    <TwoCities />
+    <Novelties />
+    <Economy />
+    <Tensions />
+    <Chapters />
+    <Quotes />
+  </main>
+  <Footer />
+  <Search />
+  <RefPopover />
+</Base>

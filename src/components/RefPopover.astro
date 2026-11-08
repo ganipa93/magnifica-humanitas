@@ -1,0 +1,18 @@
+---
+import { OFFICIAL_URL } from '../data/encyclical';
+---
+<div class="pop" id="ref-pop" popover role="dialog" aria-label="Párrafo" data-official={OFFICIAL_URL}>
+  <p class="where"></p>
+  <div class="actions">
+    <button type="button" data-act="find">Ver todo lo que cita este párrafo</button>
+    <button type="button" data-act="copy">Copiar enlace a la cita</button>
+    <a data-act="official" target="_blank" rel="noopener">Leer en el texto oficial (vatican.va)</a>
+  </div>
+</div>
+<div class="toast" role="status" aria-live="polite"></div>
+<script>
+  import { initRefs } from '../scripts/refs';
+  import { initJumps } from '../scripts/jump';
+  initRefs();
+  initJumps();
+</script>

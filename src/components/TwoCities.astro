@@ -1,0 +1,37 @@
+---
+import { twoCities as t } from '../data/encyclical';
+import { rich, refButton } from '../lib/rich';
+---
+<section id="babel">
+  <div class="wrap">
+    <h2>Dos maneras de construir</h2>
+    <p class="measure" set:html={rich(t.intro)} />
+    <div class="duo">
+      {[t.babel, t.jerusalem].map((c, i) => (
+        <div class:list={['city', { babel: i === 0 }]}>
+          <h3>{c.name}</h3>
+          <p class="tag">{c.source}</p>
+          <ul>{c.items.map((it) => <li>{it}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+    <p class="choice">“{t.choice.quote}” <Fragment set:html={refButton(t.choice.ref)} /></p>
+  </div>
+</section>
+
+<style>
+.duo{display:grid;grid-template-columns:1fr 1fr;margin-top:36px;border:1px solid var(--rule);background:var(--paper)}
+.city{padding:28px}
+.city + .city{border-left:1px solid var(--rule)}
+h3{font-stretch:125%;font-size:1.6rem;margin-bottom:4px}
+.tag{font-family:var(--display);font-stretch:80%;color:var(--muted);margin:0 0 16px}
+ul{margin:0;padding-left:1.1em}
+li{margin-bottom:.4em}
+/* Babel se tuerce; Jerusalén queda a plomo */
+.babel h3{transform:skewX(-6deg);transform-origin:left}
+.choice{margin-top:28px;font-size:1.25rem;max-width:34em}
+@media (max-width:820px){
+  .duo{grid-template-columns:1fr}
+  .city + .city{border-left:0;border-top:1px solid var(--rule)}
+}
+</style>

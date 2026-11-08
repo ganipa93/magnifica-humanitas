@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import { meta } from '../data/encyclical';
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = new URL('/og.png', Astro.site);
+---
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{meta.title}</title>
+  <meta name="description" content={meta.description}>
+  <link rel="canonical" href={canonical}>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#1C2A5E">
+  <meta property="og:title" content={meta.title}>
+  <meta property="og:description" content="Qué dice la encíclica de León XIV sobre la inteligencia artificial, párrafo por párrafo.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:url" content={canonical}>
+  <meta property="og:image" content={og}>
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,400&display=swap" rel="stylesheet">
+  <!-- Aplica el tema guardado antes del primer pintado, sin parpadeo -->
+  <script is:inline>
+    try{var t=localStorage.getItem('mh-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
+  </script>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: meta.title,
+    description: meta.description,
+    inLanguage: 'es-AR',
+    about: { '@type': 'CreativeWork', name: 'Magnifica Humanitas', author: { '@type': 'Person', name: 'León XIV' }, datePublished: '2026-05-15' },
+  })} />
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <slot />
+</body>
+</html>

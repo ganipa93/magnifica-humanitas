@@ -1,0 +1,13 @@
+---
+import { summary } from '../data/encyclical';
+import { rich } from '../lib/rich';
+---
+<section id="frase">
+  <div class="wrap">
+    <h2>En una frase</h2>
+    <p class="lede">{summary.lede}</p>
+    <div class="measure">
+      {summary.body.map((p) => <p set:html={rich(p)} />)}
+    </div>
+  </div>
+</section>

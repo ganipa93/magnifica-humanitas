@@ -1,0 +1,53 @@
+---
+import { tensions } from '../data/encyclical';
+import { rich } from '../lib/rich';
+---
+<section id="tensiones">
+  <div class="wrap">
+    <h2>Dónde el texto queda corto</h2>
+    <div class="head">
+      <p class="measure">Una lectura honesta también marca las preguntas que la encíclica deja abiertas.</p>
+      <button type="button" class="all" data-toggle-all>Abrir todas</button>
+    </div>
+    <div class="list">
+      {tensions.map((t, i) => (
+        <details id={`tension-${i + 1}`} name="tensiones">
+          <summary>{t.title}</summary>
+          <div class="body"><p set:html={rich(t.body)} /></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.all{background:none;border:0;padding:0;cursor:pointer;font-family:var(--display);font-stretch:85%;color:var(--muted);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.2em}
+.all:hover{color:var(--ink)}
+.list{margin-top:20px}
+details{border-top:1px solid var(--rule)}
+details:last-child{border-bottom:1px solid var(--rule)}
+summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;position:relative;font-family:var(--display);font-stretch:95%;font-weight:650;font-size:1.2rem;line-height:1.3}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";position:absolute;right:8px;top:50%;width:12px;height:12px;margin-top:-8px;border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(45deg);transition:transform .25s}
+details[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.body{padding:0 0 22px;max-width:40em}
+/* Apertura animada donde el navegador lo soporta */
+details::details-content{block-size:0;overflow:hidden;transition:block-size .3s ease,content-visibility .3s allow-discrete}
+details[open]::details-content{block-size:auto}
+@media (prefers-reduced-motion: reduce){details::details-content{transition:none}}
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-toggle-all]')!;
+  const items = [...document.querySelectorAll<HTMLDetailsElement>('#tensiones details')];
+  const sync = () => (btn.textContent = items.every((d) => d.open) ? 'Cerrar todas' : 'Abrir todas');
+  btn.addEventListener('click', () => {
+    const open = !items.every((d) => d.open);
+    // name="" agrupa los details como acordeón exclusivo; se quita para abrir todos juntos
+    items.forEach((d) => { d.removeAttribute('name'); d.open = open; });
+    if (!open) items.forEach((d) => d.setAttribute('name', 'tensiones'));
+    sync();
+  });
+  items.forEach((d) => d.addEventListener('toggle', sync));
+</script>
