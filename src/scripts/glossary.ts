@@ -33,10 +33,16 @@ export function initTerms() {
     btn.setAttribute('aria-expanded', 'true');
     pop.showPopover();
     place();
+    // Lleva el foco a la definición para que el lector de pantalla la lea
+    title.focus({ preventScroll: true });
   });
 
   pop.addEventListener('toggle', (e) => {
-    if ((e as ToggleEvent).newState === 'closed') anchor?.setAttribute('aria-expanded', 'false');
+    if ((e as ToggleEvent).newState === 'closed') {
+      anchor?.setAttribute('aria-expanded', 'false');
+      // Devuelve el foco al término si quedó dentro del popover
+      if (pop.contains(document.activeElement) || document.activeElement === document.body) anchor?.focus({ preventScroll: true });
+    }
   });
   const follow = () => pop.matches(':popover-open') && place();
   addEventListener('scroll', follow, { passive: true });

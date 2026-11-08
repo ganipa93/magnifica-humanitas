@@ -49,7 +49,7 @@ export function initRefs() {
   pop.addEventListener('toggle', (e) => {
     if ((e as ToggleEvent).newState === 'closed') {
       anchor?.setAttribute('aria-expanded', 'false');
-      anchor?.focus({ preventScroll: true });
+      if (pop.contains(document.activeElement) || document.activeElement === document.body) anchor?.focus({ preventScroll: true });
     }
   });
   // El popover sigue a su referencia al hacer scroll o cambiar el tamaño

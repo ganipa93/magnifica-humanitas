@@ -11,7 +11,7 @@ const { links = defaults, home = false } = Astro.props;
 ---
 <nav class="toc" aria-label={home ? 'Navegación' : 'Secciones'}>
   <div class="wrap">
-    {home && <a class="home" href="/" aria-label="Volver a la guía"><span aria-hidden="true">MH</span></a>}
+    {home && <a class="home" href="/" aria-label="MH: volver a la portada de la guía">MH</a>}
     <div class="links">
       {links.map((l) => (
         <a href={l.href} data-section={l.section} aria-current={l.current ? 'page' : undefined}>{l.label}</a>

@@ -25,6 +25,7 @@ import { rich } from '../lib/rich';
       ))}
     </ol>
     <button type="button" class="reset" data-reset hidden>Empezar de nuevo</button>
+    <p class="sr-only" aria-live="polite" data-announce></p>
   </div>
 </section>
 
@@ -81,6 +82,9 @@ import { rich } from '../lib/rich';
         li.querySelector<HTMLElement>('.verdict')!.textContent =
           `${right ? 'Correcto' : 'No'}: ${says ? 'la encíclica lo dice.' : 'la encíclica no lo dice.'}`;
         li.querySelector<HTMLElement>('.result')!.hidden = false;
+        // Anuncia el resultado a lectores de pantalla
+        root.querySelector<HTMLElement>('[data-announce]')!.textContent =
+          `${right ? 'Correcto' : 'Incorrecto'}: ${says ? 'la encíclica lo dice' : 'la encíclica no lo dice'}. ${li.querySelector('.why')!.textContent}`;
         n++; if (right) ok++;
         update();
       }),

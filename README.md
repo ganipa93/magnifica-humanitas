@@ -26,6 +26,16 @@ Todo el contenido se verificó contra el texto oficial. Entre comillas va solo t
 - **Compartir frases**: copia la cita con su enlace (o usa el menú de compartir en el celular).
 - Índice que sigue la lectura, barra de progreso, modo claro/oscuro sin parpadeo.
 
+## Accesibilidad
+
+Objetivo: WCAG 2.2 nivel AA. Las páginas se auditan con axe-core en modo claro y oscuro (cero violaciones) y se prueban solo con teclado.
+
+- Contraste AA en todo el texto: el dorado de las referencias es un bronce (`#80600C`, 5,2:1) en modo claro; en oscuro, `#D9B24A`.
+- Foco visible en todos los controles, con un dorado claro sobre los encabezados azules.
+- Popovers de § y del glosario: el foco entra al abrir y vuelve al cerrar con `Esc`.
+- La prueba "¿Lo dice o no?" anuncia cada resultado a lectores de pantalla.
+- Enlace para saltar al contenido, `lang="es-AR"` y animaciones desactivadas con `prefers-reduced-motion`.
+
 ## Stack
 
 [Astro](https://astro.build) + TypeScript, sitio estático. Sin frameworks de UI: los componentes se renderizan en build y el JavaScript del cliente son módulos chicos por interacción.
