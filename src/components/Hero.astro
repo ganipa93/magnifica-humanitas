@@ -1,5 +1,6 @@
 ---
-import { meta, structure, courseRange } from '../data/encyclical';
+import { meta } from '../data/encyclical';
+import { chapters, chapterRange, chapterHref } from '../data/structure';
 ---
 <header class="hero">
   <div class="wrap">
@@ -8,24 +9,25 @@ import { meta, structure, courseRange } from '../data/encyclical';
         <h1>Magnifica Humanitas<span>{meta.subtitle}</span></h1>
         <p class="sub">La encíclica de León XIV sobre cómo custodiar a la persona humana en el tiempo de la inteligencia artificial, leída con lupa.</p>
       </div>
-      <p class="meta"><strong>{meta.author}</strong><br>{meta.date}<br>{meta.paragraphs} párrafos, {meta.chapters} capítulos</p>
+      <p class="meta"><strong>{meta.author}</strong><br>{meta.signed}<br>{meta.released}<br>{meta.paragraphs} párrafos, {meta.chapters} capítulos</p>
     </div>
 
     <div class="wall-intro">
-      <p>Como Nehemías, que repartió la muralla de Jerusalén en tramos, acá está la encíclica dividida en los suyos. Se lee de abajo hacia arriba: la introducción es el cimiento. El ancho de cada bloque es proporcional a la cantidad de párrafos.</p>
+      <p>Como Nehemías, que repartió la muralla de Jerusalén en tramos, acá está la encíclica dividida en los suyos, con sus títulos reales. Se lee de abajo hacia arriba: la introducción es el cimiento. El ancho de cada bloque es proporcional a la cantidad de párrafos; los bloques sin título son párrafos de apertura.</p>
     </div>
 
     <nav class="wall" aria-label="Estructura de la encíclica">
-      {structure.map((c) => {
-        const r = courseRange(c);
+      {chapters.map((c) => {
+        const r = chapterRange(c);
         return (
           <div class:list={['course', { base: c.base }]} data-course={c.id}>
-            <div class="course-label"><b>{c.label}</b>§ {r.from}–{r.to}</div>
+            <a class="course-label" href={chapterHref(c)}><b>{c.label}</b>§ {r.from}–{r.to}</a>
             <div class="bricks">
-              {c.blocks.map((b) => (
-                <a class="brick" style={`flex-grow:${b.to - b.from + 1}`} href={b.href} data-jump>
-                  <span class="t">{b.title}</span>
-                  <span class="p">§ {b.from === b.to ? b.from : `${b.from}–${b.to}`}</span>
+              {c.sections.map((s) => (
+                <a class:list={['brick', { open: s.untitled }]} style={`flex-grow:${s.to - s.from + 1}`} href={chapterHref(c, s)}
+                  title={s.untitled ? `${c.label}: párrafos iniciales, sin subtítulo` : s.title}>
+                  <span class="t">{s.untitled ? '' : s.title}</span>
+                  <span class="p">§ {s.from === s.to ? s.from : `${s.from}–${s.to}`}</span>
                 </a>
               ))}
             </div>
@@ -33,7 +35,7 @@ import { meta, structure, courseRange } from '../data/encyclical';
         );
       })}
     </nav>
-    <p class="wall-note">Tocá cualquier bloque para ir a su resumen, o buscá un párrafo por número con <kbd>/</kbd>.</p>
+    <p class="wall-note">Tocá un bloque para leer el resumen de esa sección, o buscá un párrafo por número con <kbd>/</kbd>.</p>
   </div>
 </header>
 
@@ -50,7 +52,7 @@ h1 span{display:block;font-stretch:62%;font-weight:300;letter-spacing:.01em;font
 .wall-intro p{margin:0;max-width:36em}
 .wall{display:flex;flex-direction:column-reverse;gap:6px}
 .course{display:flex;gap:6px;align-items:stretch}
-.course-label{flex:0 0 112px;font-family:var(--display);font-stretch:75%;font-size:.85rem;line-height:1.2;color:#B7BCD6;padding-top:8px;transition:color .2s}
+.course-label{text-decoration:none;flex:0 0 112px;font-family:var(--display);font-stretch:75%;font-size:.85rem;line-height:1.2;color:#B7BCD6;padding-top:8px;transition:color .2s}
 .course-label b{display:block;color:#F3F1E8;font-weight:600;font-size:.95rem}
 .bricks{flex:1;display:flex;gap:6px;min-width:0}
 .brick{
@@ -63,6 +65,10 @@ h1 span{display:block;font-stretch:62%;font-weight:300;letter-spacing:.01em;font
 .brick .t{font-family:var(--display);font-stretch:80%;font-weight:600;font-size:.88rem;line-height:1.15}
 .brick .p{font-family:var(--display);font-stretch:70%;font-size:.78rem;color:#5C6390;margin-top:4px}
 .course.base .brick{background:#D9B24A;border-bottom-color:#9C7A1C}
+/* Párrafos de apertura sin subtítulo: mismo material, más tenue */
+.brick.open{background:#C9C6BA;min-width:44px}
+.course.base .brick.open{background:#B89838}
+.course-label:hover b{text-decoration:underline;text-decoration-color:#D9B24A}
 .course.base .brick:hover{background:#E8C665}
 /* El tramo que estás leyendo más abajo se marca en la muralla */
 .course.here .course-label{color:#D9B24A}
@@ -85,5 +91,6 @@ h1 span{display:block;font-stretch:62%;font-weight:300;letter-spacing:.01em;font
   .course-label{flex:none;padding-top:0}
   .bricks{flex-wrap:wrap}
   .brick{flex-basis:calc(50% - 3px) !important;flex-grow:1 !important}
+  .brick.open{display:none}
 }
 </style>

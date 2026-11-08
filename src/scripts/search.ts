@@ -2,17 +2,19 @@ import { fold } from '../lib/rich';
 import { goTo } from './jump';
 import type { Entry } from '../lib/search-index';
 
-interface MapCourse { label: string; id: string; blocks: { t: string; f: number; to: number }[] }
-interface Data { index: Entry[]; map: MapCourse[] }
+interface MapPart { c: string; s: string; t: string; f: number; to: number; href: string }
+interface Data { index: Entry[]; map: MapPart[] }
 
 let data: Data | null = null;
 const load = (): Data => (data ??= JSON.parse(document.getElementById('search-data')!.textContent!));
 
 /** Ubica un párrafo en la estructura usando el mapa incrustado (sin cargar todo el contenido). */
-export function locateRef(n: number) {
-  for (const c of load().map) for (const b of c.blocks) if (n >= b.f && n <= b.to) return { course: c, block: b };
-  return undefined;
+export function locateRef(n: number): MapPart | undefined {
+  return load().map.find((p) => n >= p.f && n <= p.to);
 }
+
+/** "Capítulo 3 · La inteligencia artificial · Párrafos iniciales" */
+export const describe = (p: MapPart) => [p.c, p.s, p.t].filter(Boolean).join(' · ');
 
 let dialog: HTMLDialogElement;
 let input: HTMLInputElement;
@@ -93,9 +95,6 @@ export function initSearch() {
     const r = results[i];
     if (!r) return;
     dialog.close();
-    // Si el destino está dentro de un <details> cerrado, se abre
-    const el = document.querySelector(r.href);
-    if (el instanceof HTMLDetailsElement) el.open = true;
     goTo(r.href);
   };
 
@@ -111,15 +110,19 @@ export function initSearch() {
       const loc = locateRef(n);
       if (loc) {
         locateBox.hidden = false;
-        locateBox.textContent = `El § ${n} está en ${loc.course.label}, “${loc.block.t}” (§ ${loc.block.f}–${loc.block.to}).`;
+        const span = loc.f === loc.to ? `§ ${loc.f}` : `§ ${loc.f}–${loc.to}`;
+        locateBox.textContent = `El § ${n} está en ${describe(loc)} (${span}).`;
       } else {
         locateBox.hidden = false;
         locateBox.textContent = `La encíclica tiene 245 párrafos. Probá con un número entre 1 y 245.`;
       }
-      // Lo más específico primero: entradas que citan pocos párrafos
-      results = index.filter((e) => e.refs.includes(n)).sort((a, b) => a.refs.length - b.refs.length);
+      // Lo más específico primero: entradas que citan pocos párrafos; los capítulos enteros al final
+      results = index
+        .filter((e) => e.refs.includes(n) && e.kind !== 'Capítulo')
+        // El resumen de su sección primero; después, lo más específico
+        .sort((a, b) => (b.kind === 'Resumen' ? 1 : 0) - (a.kind === 'Resumen' ? 1 : 0) || a.refs.length - b.refs.length);
     } else if (!raw) {
-      results = index.filter((e) => e.kind === 'Capítulo' || e.kind === 'Sección');
+      results = index.filter((e) => e.kind === 'Capítulo');
     } else {
       results = index
         .map((e) => {
@@ -141,7 +144,7 @@ export function initSearch() {
     list.innerHTML = results
       .slice(0, 40)
       .map((r, i) => `<li role="option" id="sr-${i}" data-i="${i}">
-          <span class="k">${r.kind}</span>
+          <span class="k">${r.kind}${r.where ? ` · ${escHtml(r.where)}` : ''}</span>
           <span class="t">${highlight(r.title, terms)}</span>
           ${r.text ? `<span class="x">${highlight(snippet(r.text, terms), terms)}</span>` : ''}
           <span class="r">${fmtRefs(r.refs)}</span>

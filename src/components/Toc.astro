@@ -1,10 +1,18 @@
 ---
 import { sections } from '../data/encyclical';
+
+interface Link { href: string; label: string; section?: string; current?: boolean }
+interface Props { links?: Link[]; home?: boolean }
+const defaults: Link[] = sections.map((s) => ({ href: `#${s.id}`, label: s.label, section: s.id }));
+const { links = defaults, home = false } = Astro.props;
 ---
-<nav class="toc" aria-label="Secciones">
+<nav class="toc" aria-label={home ? 'Navegación' : 'Secciones'}>
   <div class="wrap">
+    {home && <a class="home" href="/" aria-label="Volver a la guía"><span aria-hidden="true">MH</span></a>}
     <div class="links">
-      {sections.map((s) => <a href={`#${s.id}`} data-section={s.id}>{s.label}</a>)}
+      {links.map((l) => (
+        <a href={l.href} data-section={l.section} aria-current={l.current ? 'page' : undefined}>{l.label}</a>
+      ))}
     </div>
     <div class="tools">
       <button type="button" class="tool search" data-open-search aria-keyshortcuts="Control+K /">
@@ -27,9 +35,10 @@ import { sections } from '../data/encyclical';
 .links::-webkit-scrollbar{display:none}
 .links a{text-decoration:none;white-space:nowrap;color:var(--muted);padding:12px 0;position:relative;transition:color .2s}
 .links a:hover{color:var(--ink)}
-.links a[aria-current="true"]{color:var(--ink)}
+.links a:is([aria-current="true"],[aria-current="page"]){color:var(--ink)}
 .links a::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s}
-.links a[aria-current="true"]::after{transform:scaleX(1)}
+.links a:is([aria-current="true"],[aria-current="page"])::after{transform:scaleX(1)}
+.home{flex:none;display:grid;place-items:center;width:32px;height:32px;background:var(--lapis);color:#E9E6DA;text-decoration:none;font-family:var(--display);font-stretch:75%;font-weight:800;font-size:.85rem;border-bottom:3px solid #D9B24A}
 .tools{display:flex;gap:6px;flex:none}
 .tool{display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid var(--rule);color:var(--muted);padding:4px 10px;cursor:pointer;font-family:var(--display);font-stretch:85%;font-size:.95rem;min-height:32px}
 .tool:hover{color:var(--ink);border-color:var(--muted)}

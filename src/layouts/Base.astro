@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import { meta } from '../data/encyclical';
 
+interface Props { title?: string; description?: string }
+const { title = meta.title, description = meta.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const og = new URL('/og.png', Astro.site);
 ---
@@ -10,12 +12,12 @@ const og = new URL('/og.png', Astro.site);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{meta.title}</title>
-  <meta name="description" content={meta.description}>
+  <title>{title}</title>
+  <meta name="description" content={description}>
   <link rel="canonical" href={canonical}>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#1C2A5E">
-  <meta property="og:title" content={meta.title}>
+  <meta property="og:title" content={title}>
   <meta property="og:description" content="Qué dice la encíclica de León XIV sobre la inteligencia artificial, párrafo por párrafo.">
   <meta property="og:type" content="article">
   <meta property="og:locale" content="es_AR">

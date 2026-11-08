@@ -1,0 +1,102 @@
+---
+import { claims } from '../data/encyclical';
+import { rich } from '../lib/rich';
+---
+<section id="prueba">
+  <div class="wrap">
+    <h2>¿Lo dice o no lo dice?</h2>
+    <div class="head">
+      <p class="measure">Muchas cosas se le atribuyen a la encíclica. Probá distinguir lo que dice de lo que no: cada respuesta trae el párrafo para comprobarlo.</p>
+      <p class="score" aria-live="polite"><span data-score>0</span> de <span data-answered>0</span> correctas</p>
+    </div>
+    <ol class="claims">
+      {claims.map((c, i) => (
+        <li class="claim" id={`afirmacion-${i + 1}`} data-says={String(c.says)}>
+          <p class="text">{c.claim}</p>
+          <div class="choices" role="group" aria-label="Tu respuesta">
+            <button type="button" data-answer="true">Lo dice</button>
+            <button type="button" data-answer="false">No lo dice</button>
+          </div>
+          <div class="result" hidden>
+            <p class="verdict"></p>
+            <p class="why" set:html={rich(c.why)} />
+          </div>
+        </li>
+      ))}
+    </ol>
+    <button type="button" class="reset" data-reset hidden>Empezar de nuevo</button>
+  </div>
+</section>
+
+<style>
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.score{font-family:var(--display);font-stretch:90%;color:var(--muted);margin:0}
+.score span:first-child{color:var(--ink);font-weight:700}
+.claims{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.claim{padding:20px 0;border-top:1px solid var(--rule)}
+.text{font-family:var(--display);font-stretch:95%;font-weight:600;font-size:1.15rem;line-height:1.35;margin-bottom:12px}
+.choices{display:flex;gap:8px}
+.choices button{font-family:var(--display);font-stretch:90%;background:var(--paper);border:1px solid var(--rule);padding:6px 14px;cursor:pointer;min-height:36px}
+.choices button:hover:not(:disabled){border-color:var(--ink)}
+.choices button:disabled{cursor:default}
+.choices button.picked{border-color:var(--ink);border-width:2px;padding:5px 13px}
+.choices button.truth{background:var(--ink);color:var(--vellum);border-color:var(--ink)}
+.result{margin-top:12px}
+.verdict{font-family:var(--display);font-stretch:90%;font-weight:700;margin:0 0 4px}
+.claim.ok .verdict{color:var(--gold)}
+.why{margin:0;color:var(--muted);font-size:1rem}
+.reset{margin-top:20px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--display);font-stretch:85%;color:var(--muted);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.2em}
+@media (prefers-reduced-motion: no-preference){
+  .result:not([hidden]){animation:reveal .25s ease-out}
+  @keyframes reveal{from{opacity:0;transform:translateY(-4px)}}
+}
+@media (max-width:820px){.claims{grid-template-columns:1fr}}
+</style>
+
+<script>
+  const root = document.getElementById('prueba')!;
+  const score = root.querySelector<HTMLElement>('[data-score]')!;
+  const answered = root.querySelector<HTMLElement>('[data-answered]')!;
+  const reset = root.querySelector<HTMLButtonElement>('[data-reset]')!;
+  const items = [...root.querySelectorAll<HTMLLIElement>('.claim')];
+  let ok = 0, n = 0;
+
+  const update = () => {
+    score.textContent = String(ok);
+    answered.textContent = String(n);
+    reset.hidden = n === 0;
+  };
+
+  items.forEach((li) => {
+    const says = li.dataset.says === 'true';
+    li.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const right = (b.dataset.answer === 'true') === says;
+        li.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach((x) => {
+          x.disabled = true;
+          if ((x.dataset.answer === 'true') === says) x.classList.add('truth');
+        });
+        b.classList.add('picked');
+        li.classList.add(right ? 'ok' : 'miss');
+        li.querySelector<HTMLElement>('.verdict')!.textContent =
+          `${right ? 'Correcto' : 'No'}: ${says ? 'la encíclica lo dice.' : 'la encíclica no lo dice.'}`;
+        li.querySelector<HTMLElement>('.result')!.hidden = false;
+        n++; if (right) ok++;
+        update();
+      }),
+    );
+  });
+
+  reset.addEventListener('click', () => {
+    ok = 0; n = 0;
+    items.forEach((li) => {
+      li.classList.remove('ok', 'miss');
+      li.querySelector<HTMLElement>('.result')!.hidden = true;
+      li.querySelectorAll<HTMLButtonElement>('[data-answer]').forEach((x) => {
+        x.disabled = false; x.classList.remove('truth', 'picked');
+      });
+    });
+    update();
+    root.scrollIntoView({ behavior: 'smooth' });
+  });
+</script>

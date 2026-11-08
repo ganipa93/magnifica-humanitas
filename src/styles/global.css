@@ -84,3 +84,8 @@ blockquote{margin:0;font-style:italic}
 .toast.show{opacity:1;translate:-50% -6px}
 
 kbd{font-family:var(--display);font-stretch:80%;font-size:.8em;border:1px solid var(--rule);border-bottom-width:2px;padding:0 5px;border-radius:3px;color:var(--muted)}
+
+/* Transición suave entre páginas (portada ↔ capítulos), sin JavaScript */
+@media (prefers-reduced-motion: no-preference){
+  @view-transition{navigation:auto}
+}

@@ -1,10 +1,22 @@
-/** Índice activo según la sección visible, barra de progreso y tramo marcado en la muralla. */
+/**
+ * Seguimiento de lectura:
+ * - marca el enlace activo de cualquier navegación con [data-section] (barra superior, índice lateral)
+ * - barra de progreso
+ * - en la portada, ilumina en la muralla el capítulo que se está leyendo
+ */
 export function initToc() {
-  const links = new Map<string, HTMLAnchorElement>();
-  document.querySelectorAll<HTMLAnchorElement>('.toc [data-section]').forEach((a) => links.set(a.dataset.section!, a));
-  const sections = [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+  const links = new Map<string, HTMLAnchorElement[]>();
+  document.querySelectorAll<HTMLAnchorElement>('[data-section]').forEach((a) => {
+    const id = a.dataset.section!;
+    links.set(id, [...(links.get(id) ?? []), a]);
+  });
+  const targets = [...links.keys()]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean) as HTMLElement[];
+  targets.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+
   const bar = document.querySelector<HTMLElement>('.toc .progress span');
-  const chapters = [...document.querySelectorAll<HTMLElement>('.chapter')];
+  const chapters = [...document.querySelectorAll<HTMLElement>('main .chapter')];
   const courses = new Map<string, HTMLElement>();
   document.querySelectorAll<HTMLElement>('[data-course]').forEach((c) => courses.set(c.dataset.course!, c));
 
@@ -15,28 +27,29 @@ export function initToc() {
   const update = () => {
     ticking = false;
     const line = window.innerHeight * 0.3;
-    // Sección activa: la última cuyo inicio ya pasó la línea de lectura
+    // Activa: la última cuyo inicio ya pasó la línea de lectura
     let active = '';
-    for (const s of sections) if (s.getBoundingClientRect().top <= line) active = s.id;
+    for (const s of targets) if (s.getBoundingClientRect().top <= line) active = s.id;
     if (active !== current) {
-      if (current) links.get(current)?.removeAttribute('aria-current');
-      if (active) {
-        const a = links.get(active)!;
+      links.get(current)?.forEach((a) => a.removeAttribute('aria-current'));
+      links.get(active)?.forEach((a) => {
         a.setAttribute('aria-current', 'true');
-        a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-      }
+        // Solo la barra superior se desplaza horizontalmente hacia el enlace activo
+        if (a.closest('.toc')) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+      });
       current = active;
     }
-    // Capítulo activo → se marca su tramo en la muralla
-    let ch = '';
-    for (const c of chapters) {
-      const r = c.getBoundingClientRect();
-      if (r.top <= line && r.bottom > line) ch = c.id;
-    }
-    if (ch !== currentCh) {
-      courses.get(currentCh)?.classList.remove('here');
-      courses.get(ch)?.classList.add('here');
-      currentCh = ch;
+    if (courses.size) {
+      let ch = '';
+      for (const c of chapters) {
+        const r = c.getBoundingClientRect();
+        if (r.top <= line && r.bottom > line) ch = c.id;
+      }
+      if (ch !== currentCh) {
+        courses.get(currentCh)?.classList.remove('here');
+        courses.get(ch)?.classList.add('here');
+        currentCh = ch;
+      }
     }
     if (bar) {
       const max = document.documentElement.scrollHeight - window.innerHeight;

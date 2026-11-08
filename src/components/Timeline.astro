@@ -1,0 +1,115 @@
+---
+import { timeline } from '../data/encyclical';
+import { rich, refButton } from '../lib/rich';
+const first = timeline[0]!.year, last = timeline[timeline.length - 1]!.year;
+---
+<section id="historia">
+  <div class="wrap">
+    <h2>135 años en una línea</h2>
+    <p class="measure">El capítulo 1 repasa los documentos que formaron la Doctrina social, de <i>Rerum novarum</i> a hoy <Fragment set:html={refButton('28–44')} />. Cada marca está ubicada en su año; elegí una para ver qué dice la encíclica de ese texto.</p>
+
+    <div class="line" role="tablist" aria-label="Documentos de la Doctrina social">
+      <div class="axis" aria-hidden="true">
+        {[1900, 1925, 1950, 1975, 2000, 2025].map((y) => (
+          <span class="tick" style={`--x:${(y - first) / (last - first)}`}>{y}</span>
+        ))}
+      </div>
+      {timeline.map((m, i) => (
+        <button type="button" role="tab" class:list={['mark', { now: i === timeline.length - 1 }]}
+          id={`hito-${i + 1}`} aria-selected={i === 0 ? 'true' : 'false'} aria-controls="hito-panel"
+          style={`--x:${(m.year - first) / (last - first)};--row:${i % 3}`} data-i={i}>
+          <span class="y">{m.year}</span>
+        </button>
+      ))}
+    </div>
+
+    <div id="hito-panel" class="panel" role="tabpanel" aria-live="polite">
+      {timeline.map((m, i) => (
+        <div class="item" data-item={i} hidden={i !== 0}>
+          <p class="who"><b>{m.year}</b> {m.pope}</p>
+          <h3 set:html={rich(m.doc)} />
+          <p><Fragment set:html={rich(m.note)} /> <Fragment set:html={refButton(m.ref)} /></p>
+        </div>
+      ))}
+      <div class="nav">
+        <button type="button" data-step="-1" aria-label="Documento anterior">Anterior</button>
+        <span class="count"><span data-pos>1</span> de {timeline.length}</span>
+        <button type="button" data-step="1" aria-label="Documento siguiente">Siguiente</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.line{position:relative;height:118px;margin:40px 8px 0}
+.axis{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--rule)}
+.tick{position:absolute;left:calc(var(--x) * 100%);top:8px;translate:-50% 0;font-family:var(--display);font-stretch:80%;font-size:.8rem;color:var(--muted)}
+.tick::before{content:"";position:absolute;left:50%;top:-12px;height:7px;width:1px;background:var(--rule)}
+.mark{
+  position:absolute;left:calc(var(--x) * 100%);bottom:0;translate:-50% 0;
+  height:calc(36px + var(--row) * 26px);width:34px;padding:0;border:0;background:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  /* Las marcas cercanas se superponen: solo la etiqueta de arriba recibe el clic */
+  pointer-events:none;
+}
+.mark .y{pointer-events:auto;padding:2px 3px 4px}
+.mark::after{content:"";flex:1;width:2px;background:var(--stone);transition:background .2s}
+.mark .y{font-family:var(--display);font-stretch:75%;font-weight:600;font-size:.78rem;color:var(--muted);line-height:1;padding-bottom:4px;transition:color .2s}
+.mark:hover .y,.mark[aria-selected="true"] .y{color:var(--ink)}
+.mark:hover::after{background:var(--muted)}
+.mark[aria-selected="true"]::after{background:var(--gold);width:4px}
+.mark.now .y{color:var(--gold)}
+.panel{margin-top:24px;background:var(--paper);border:1px solid var(--rule);padding:24px 28px;max-width:46em;min-height:210px;display:flex;flex-direction:column}
+.who{font-family:var(--display);font-stretch:90%;color:var(--muted);margin:0 0 4px}
+.who b{color:var(--gold);font-weight:700;margin-right:6px}
+h3{font-stretch:110%;font-size:1.5rem}
+.item{flex:1}
+.nav{display:flex;align-items:center;gap:16px;margin-top:8px;font-family:var(--display);font-stretch:85%}
+.nav button{background:none;border:1px solid var(--rule);padding:4px 12px;cursor:pointer;color:var(--muted)}
+.nav button:hover{color:var(--ink);border-color:var(--muted)}
+.count{color:var(--muted);font-size:.9rem}
+@media (max-width:820px){
+  /* En pantallas chicas el año se reemplaza por un punto tocable */
+  .mark .y{font-size:0;width:16px;height:16px;padding:0;margin-bottom:2px;border-radius:50%;background:var(--stone)}
+  .mark[aria-selected="true"] .y{background:var(--gold)}
+  .mark.now .y{background:var(--gold);opacity:.6}
+  .mark[aria-selected="true"].now .y{opacity:1}
+  .tick:nth-child(even){display:none}
+  .panel{padding:20px}
+}
+</style>
+
+<script>
+  const root = document.getElementById('historia')!;
+  const marks = [...root.querySelectorAll<HTMLButtonElement>('.mark')];
+  const items = [...root.querySelectorAll<HTMLElement>('[data-item]')];
+  const pos = root.querySelector<HTMLElement>('[data-pos]')!;
+  let cur = 0;
+  const show = (i: number, focus = false) => {
+    cur = (i + marks.length) % marks.length;
+    marks.forEach((m, k) => { m.setAttribute('aria-selected', String(k === cur)); m.tabIndex = k === cur ? 0 : -1; });
+    items.forEach((it, k) => (it.hidden = k !== cur));
+    pos.textContent = String(cur + 1);
+    if (focus) marks[cur]!.focus();
+  };
+  marks.forEach((m, i) => m.addEventListener('click', () => show(i)));
+  root.querySelector('.line')!.addEventListener('keydown', (e) => {
+    const k = (e as KeyboardEvent).key;
+    if (k === 'ArrowRight') { e.preventDefault(); show(cur + 1, true); }
+    if (k === 'ArrowLeft') { e.preventDefault(); show(cur - 1, true); }
+    if (k === 'Home') { e.preventDefault(); show(0, true); }
+    if (k === 'End') { e.preventDefault(); show(marks.length - 1, true); }
+  });
+  root.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) =>
+    b.addEventListener('click', () => show(cur + Number(b.dataset.step))),
+  );
+  // Si se llega con #hito-N (desde el buscador), se muestra ese documento
+  const fromHash = () => {
+    const m = location.hash.match(/^#hito-(\d+)$/);
+    if (m) show(Number(m[1]) - 1);
+  };
+  addEventListener('hashchange', fromHash);
+  addEventListener('popstate', fromHash);
+  fromHash();
+  show(cur);
+</script>

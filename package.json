@@ -5,13 +5,17 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview"
+    "build": "npm run check:data && astro check && astro build",
+    "preview": "astro preview",
+    "check:data": "tsx scripts/check-data.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.4.7",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }

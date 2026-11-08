@@ -1,12 +1,7 @@
 ---
-import { buildIndex } from '../lib/search-index';
-import { structure } from '../data/encyclical';
+import { buildIndex, buildMap } from '../lib/search-index';
 const index = buildIndex();
-// Mapa mínimo de la estructura para ubicar cualquier § en el cliente
-const map = structure.map((c) => ({
-  label: c.label, id: c.id,
-  blocks: c.blocks.map((b) => ({ t: b.title, f: b.from, to: b.to })),
-}));
+const map = buildMap();
 ---
 <dialog class="search" aria-label="Buscar en la guía" data-search>
   <form method="dialog" class="bar" role="search">

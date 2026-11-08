@@ -1,5 +1,5 @@
 import { openSearch } from './search';
-import { locateRef } from './search';
+import { locateRef, describe } from './search';
 
 import { toast } from './toast';
 
@@ -9,6 +9,7 @@ export function initRefs() {
   if (!pop || !('showPopover' in pop)) return;
   const where = pop.querySelector<HTMLElement>('.where')!;
   const official = pop.querySelector<HTMLAnchorElement>('[data-act="official"]')!;
+  const summaryLink = pop.querySelector<HTMLAnchorElement>('[data-act="summary"]')!;
   let anchor: HTMLButtonElement | null = null;
 
   const place = () => {
@@ -35,7 +36,9 @@ export function initRefs() {
     where.innerHTML = '';
     const b = document.createElement('b');
     b.textContent = `§ ${ref}`;
-    where.append(b, document.createTextNode(loc ? `${loc.course.label} · ${loc.block.t}` : ''));
+    where.append(b, document.createTextNode(loc ? describe(loc) : ''));
+    summaryLink.hidden = !loc;
+    if (loc) summaryLink.href = loc.href;
     official.href = pop.dataset.official!;
     btn.setAttribute('aria-expanded', 'true');
     pop.showPopover();
@@ -67,4 +70,5 @@ export function initRefs() {
     pop.hidePopover();
   });
   official.addEventListener('click', () => pop.hidePopover());
+  summaryLink.addEventListener('click', () => pop.hidePopover());
 }
