@@ -8,6 +8,10 @@
  */
 import { chapters, type Part } from '../src/data/structure';
 import * as home from '../src/data/encyclical';
+import { topics } from '../src/data/topics';
+import { glossary } from '../src/data/glossary';
+import { leafStarts } from '../src/lib/topics';
+import { fold } from '../src/lib/fold';
 import { parseRef, refsIn } from '../src/lib/rich';
 
 const TOTAL = 245;
@@ -41,6 +45,20 @@ for (const c of chapters) {
   }
 }
 
+// Temas: cada número debe ser el inicio de una sección real, sin repetidos
+const starts = new Set(leafStarts());
+for (const t of topics) {
+  if (new Set(t.parts).size !== t.parts.length) fail(`Tema "${t.label}": secciones repetidas`);
+  for (const n of t.parts) if (!starts.has(n)) fail(`Tema "${t.label}": § ${n} no es el inicio de ninguna sección`);
+}
+if (new Set(topics.map((t) => t.slug)).size !== topics.length) fail('Temas con slug repetido');
+
+// Glosario: ids únicos y cada término usado al menos una vez en el contenido
+if (new Set(glossary.map((g) => g.id)).size !== glossary.length) fail('Glosario con ids repetidos');
+const corpus = fold(JSON.stringify([home, chapters]));
+for (const g of glossary)
+  if (!g.match.some((m) => corpus.includes(fold(m)))) fail(`Glosario: "${g.term}" no aparece en ningún texto del sitio`);
+
 // Todas las referencias de la portada
 const texts: string[] = [];
 const refs: string[] = [];
@@ -51,6 +69,7 @@ const collect = (v: unknown): void => {
     for (const [k, x] of Object.entries(v)) (k === 'ref' && typeof x === 'string' ? refs.push(x) : collect(x));
 };
 collect(home);
+collect(glossary);
 chapters.forEach((c) => collect(c));
 for (const t of texts) for (const r of refsIn(t)) if (r < 1 || r > TOTAL) fail(`Referencia fuera de rango: § ${r} en "${t.slice(0, 50)}…"`);
 for (const r of refs) for (const n of parseRef(r)) if (n < 1 || n > TOTAL) fail(`Referencia fuera de rango: § ${n}`);

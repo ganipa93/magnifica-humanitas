@@ -3,9 +3,12 @@ import {
 } from '../data/encyclical';
 import { chapters, chapterRange, chapterHref, walk } from '../data/structure';
 import { parseRef, plain, refsIn } from './rich';
+import { topics } from '../data/topics';
+import { glossary } from '../data/glossary';
+import { topicHref } from './topics';
 
 export interface Entry {
-  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia';
+  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia' | 'Tema' | 'Glosario';
   title: string;
   /** Contexto (capítulo, sección madre) */
   where?: string;
@@ -76,6 +79,16 @@ export function buildIndex(): Entry[] {
       });
     }
   }
+
+  for (const t of topics)
+    e.push({
+      kind: 'Tema', title: t.label, href: topicHref(t), text: t.intro,
+      // No se indexan sus párrafos: un tema abarca demasiados como para competir por número
+      refs: [],
+    });
+
+  for (const g of glossary)
+    e.push({ kind: 'Glosario', title: g.term, href: `/glosario/#${g.id}`, text: plain(g.def), refs: refsIn(g.def) });
 
   quotes.forEach((q, i) =>
     e.push({ kind: 'Frase', title: `“${q.text}”`, href: `/#frase-${i + 1}`, text: '', refs: parseRef(q.ref) }),

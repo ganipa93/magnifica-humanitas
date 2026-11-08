@@ -3,7 +3,10 @@ import { sections } from '../data/encyclical';
 
 interface Link { href: string; label: string; section?: string; current?: boolean }
 interface Props { links?: Link[]; home?: boolean }
-const defaults: Link[] = sections.map((s) => ({ href: `#${s.id}`, label: s.label, section: s.id }));
+const defaults: Link[] = [
+  ...sections.map((s) => ({ href: `#${s.id}`, label: s.label, section: s.id })),
+  { href: '/glosario/', label: 'Glosario' },
+];
 const { links = defaults, home = false } = Astro.props;
 ---
 <nav class="toc" aria-label={home ? 'Navegación' : 'Secciones'}>

@@ -1,0 +1,86 @@
+---
+import Base from '../../layouts/Base.astro';
+import Toc from '../../components/Toc.astro';
+import Footer from '../../components/Footer.astro';
+import Search from '../../components/Search.astro';
+import RefPopover from '../../components/RefPopover.astro';
+import TopicStrip from '../../components/TopicStrip.astro';
+import { topics, type Topic } from '../../data/topics';
+import { chapters } from '../../data/structure';
+import { topicHits, topicSpans, topicHref, paragraphsIn, hitTitle } from '../../lib/topics';
+import { rich, refButton } from '../../lib/rich';
+import { siteLinks } from '../../lib/nav';
+
+export function getStaticPaths() {
+  return topics.map((t) => ({ params: { slug: t.slug }, props: { t } }));
+}
+const { t } = Astro.props as { t: Topic };
+const hits = topicHits(t);
+const groups = chapters
+  .map((c) => ({ c, hits: hits.filter((h) => h.chapter.slug === c.slug) }))
+  .filter((g) => g.hits.length);
+const span = (a: number, b: number) => (a === b ? `${a}` : `${a}–${b}`);
+const others = topics.filter((x) => x.slug !== t.slug);
+---
+<Base title={`${t.label} en Magnifica Humanitas · recorrido por tema`} description={t.intro}>
+  <header class="band">
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> <a href="/#temas">Recorridos por tema</a></p>
+      <h1>{t.label}</h1>
+      <p class="lede">{t.intro}</p>
+      <p class="facts">{hits.length} secciones · {paragraphsIn(t)} de 245 párrafos · en {groups.length} de 7 bloques</p>
+      <div class="strip-wrap"><TopicStrip spans={topicSpans(t)} label={`${t.label}: dónde aparece en la encíclica`} large /></div>
+    </div>
+  </header>
+
+  <Toc links={siteLinks()} home />
+
+  <main id="contenido" class="wrap body">
+    {groups.map(({ c, hits }) => (
+      <section class="group">
+        <h2><a href={`/capitulo/${c.slug}/`}>{c.label}</a><span>{c.title}</span></h2>
+        {hits.map((h) => (
+          <article class="hit" id={`p${h.part.from}`}>
+            {h.parent && !h.part.untitled && <p class="parent">{h.parent.title}</p>}
+            <h3><a href={h.href}>{hitTitle(h)}</a> <Fragment set:html={refButton(span(h.part.from, h.part.to))} /></h3>
+            <p set:html={rich(h.part.summary)} />
+          </article>
+        ))}
+      </section>
+    ))}
+
+    <nav class="others" aria-label="Otros recorridos">
+      <h2>Otros recorridos</h2>
+      <ul>{others.map((o) => <li><a href={topicHref(o)}>{o.label}</a></li>)}</ul>
+    </nav>
+  </main>
+
+  <Footer />
+  <Search />
+  <RefPopover />
+</Base>
+
+<style>
+.band{background:var(--lapis);color:#F3F1E8;padding:28px 0 36px}
+.crumbs{font-family:var(--display);font-stretch:85%;font-size:.95rem;color:#B7BCD6;margin:0 0 28px}
+.crumbs a{color:#D7DAEA}
+h1{font-family:var(--display);font-stretch:115%;font-weight:800;font-size:clamp(2.2rem,6vw,4.2rem);line-height:1;letter-spacing:-.015em;margin:0;max-width:16em}
+.lede{max-width:36em;color:#D7DAEA;margin:18px 0 0;font-size:1.2rem}
+.facts{font-family:var(--display);font-stretch:80%;color:#B7BCD6;margin:14px 0 24px}
+.strip-wrap{--stone:#2E3B78;--vellum:#1C2A5E;--gold:#D9B24A;--muted:#B7BCD6}
+.body{padding-top:48px;padding-bottom:48px}
+.group{padding:0 0 32px;margin-bottom:32px;border-bottom:1px solid var(--rule)}
+.group h2{display:flex;flex-direction:column;gap:2px;font-size:1.6rem;margin-bottom:8px}
+.group h2 a{text-decoration:none;color:var(--gold);font-stretch:90%;font-size:.6em;font-weight:700}
+.group h2 span{font-weight:700}
+.hit{padding:18px 0 4px 20px;border-left:3px solid var(--stone);margin-top:14px}
+.parent{font-family:var(--display);font-stretch:85%;font-size:.9rem;color:var(--muted);margin:0 0 2px}
+.hit h3 a{text-decoration:none}
+.hit h3 a:hover{text-decoration:underline;text-decoration-color:var(--gold)}
+.hit p{max-width:40em}
+.others{border:0}
+.others h2{font-size:1.4rem}
+.others ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.others a{display:inline-block;padding:6px 12px;border:1px solid var(--rule);background:var(--paper);text-decoration:none;font-family:var(--display);font-stretch:90%}
+.others a:hover{border-color:var(--ink)}
+</style>

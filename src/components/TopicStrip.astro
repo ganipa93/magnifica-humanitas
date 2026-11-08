@@ -1,0 +1,35 @@
+---
+/**
+ * Franja de los 245 párrafos con los tramos de un tema resaltados.
+ * Las divisiones marcan dónde empieza cada capítulo.
+ */
+import { chapters, chapterRange } from '../data/structure';
+interface Props { spans: [number, number][]; label: string; large?: boolean }
+const { spans, label, large = false } = Astro.props;
+const TOTAL = 245;
+const bounds = chapters.slice(1).map((c) => chapterRange(c).from);
+---
+<svg class:list={['strip', { large }]} viewBox={`0 0 ${TOTAL} 10`} preserveAspectRatio="none" role="img" aria-label={label}>
+  <rect x="0" y="0" width={TOTAL} height="10" class="bg" />
+  {spans.map(([a, b]) => <rect x={a - 1} y="0" width={b - a + 1} height="10" class="on" />)}
+  {bounds.map((n) => <line x1={n - 1} x2={n - 1} y1="0" y2="10" class="sep" vector-effect="non-scaling-stroke" />)}
+</svg>
+{large && (
+  <div class="scale" aria-hidden="true">
+    {chapters.map((c) => {
+      const r = chapterRange(c);
+      return <span style={`flex:${r.to - r.from + 1}`}>{c.short}</span>;
+    })}
+  </div>
+)}
+<style>
+.strip{display:block;width:100%;height:10px}
+.strip.large{height:22px}
+.bg{fill:var(--stone)}
+.on{fill:var(--gold)}
+.sep{stroke:var(--vellum);stroke-width:2px}
+.scale{display:flex;margin-top:6px;font-family:var(--display);font-stretch:75%;font-size:.8rem;color:var(--muted)}
+.scale span{padding-left:3px;overflow:hidden;white-space:nowrap}
+/* En pantallas chicas el tramo de la introducción no alcanza para su etiqueta */
+@media (max-width:560px){.scale span:first-child{visibility:hidden}}
+</style>

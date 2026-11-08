@@ -16,6 +16,8 @@ Todo el contenido se verificó contra el texto oficial. Entre comillas va solo t
 - **Tocar cualquier §**: dice dónde está ese párrafo, busca todo lo que lo cita, copia el enlace o abre el texto oficial.
 - **Muralla navegable**: cada bloque lleva a su resumen, y el tramo que estás leyendo se marca arriba.
 - **Economía**: resaltar una de las dos lecturas para ver qué párrafos usa cada lado.
+- **Recorridos por tema**: once temas (IA, datos, trabajo, guerra, educación…) que juntan las secciones de todos los capítulos, con una franja que muestra dónde aparece cada tema en los 245 párrafos.
+- **Glosario integrado**: los términos clave aparecen subrayados en el texto y muestran su definición al tocarlos; página propia con filtro y con las secciones donde aparece cada uno.
 - **135 años en una línea**: los documentos de la Doctrina social que repasa el capítulo 1, ubicados en su año.
 - **¿Lo dice o no lo dice?**: afirmaciones que circulan sobre la encíclica, con la respuesta y el párrafo para comprobarla.
 - **Compartir frases**: copia la cita con su enlace (o usa el menú de compartir en el celular).
@@ -29,15 +31,20 @@ Todo el contenido se verificó contra el texto oficial. Entre comillas va solo t
 src/
   data/structure.ts     estructura completa: capítulos, secciones, subsecciones y resúmenes
   data/encyclical.ts    contenido de la portada (ideas nuevas, economía, línea de tiempo, prueba)
+  data/topics.ts        recorridos por tema (qué secciones toca cada uno)
+  data/glossary.ts      términos, variantes y definiciones
+  lib/terms.ts          subraya en el texto el primer uso de cada término
   lib/rich.ts           mini-sintaxis del contenido: [§ 71–72], *itálica*, **énfasis**
   lib/search-index.ts   índice de búsqueda generado en build
   components/           una sección por componente
   pages/capitulo/       una página por capítulo, generada desde structure.ts
+  pages/temas/          una página por tema
+  pages/glosario.astro  glosario con filtro
   scripts/              búsqueda, popover de §, índice activo, tema
 scripts/check-data.ts   verificación de integridad (corre antes de cada build)
 ```
 
-Para editar contenido alcanza con tocar los archivos de `src/data/`: la muralla, las páginas de capítulo y el índice de búsqueda se generan solos. Antes de cada build, `npm run check:data` comprueba que los capítulos cubran los 245 párrafos sin huecos ni superposiciones, que cada resumen cite solo párrafos de su propio rango y que las comillas estén balanceadas.
+Para editar contenido alcanza con tocar los archivos de `src/data/`: la muralla, las páginas de capítulo y el índice de búsqueda se generan solos. Antes de cada build, `npm run check:data` comprueba que los capítulos cubran los 245 párrafos sin huecos ni superposiciones, que cada resumen cite solo párrafos de su propio rango, que cada tema apunte a secciones reales, que cada término del glosario aparezca en el contenido y que las comillas estén balanceadas.
 
 ```bash
 npm install

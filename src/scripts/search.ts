@@ -1,4 +1,4 @@
-import { fold } from '../lib/rich';
+import { fold } from '../lib/fold';
 import { goTo } from './jump';
 import type { Entry } from '../lib/search-index';
 
@@ -122,7 +122,7 @@ export function initSearch() {
         // El resumen de su sección primero; después, lo más específico
         .sort((a, b) => (b.kind === 'Resumen' ? 1 : 0) - (a.kind === 'Resumen' ? 1 : 0) || a.refs.length - b.refs.length);
     } else if (!raw) {
-      results = index.filter((e) => e.kind === 'Capítulo');
+      results = index.filter((e) => e.kind === 'Capítulo' || e.kind === 'Tema');
     } else {
       results = index
         .map((e) => {

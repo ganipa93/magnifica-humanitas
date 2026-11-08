@@ -197,7 +197,7 @@ export const chapters: Chapter[] = [
           },
           {
             title: 'Responsabilidad, transparencia y gobernanza de la IA', from: 102, to: 111,
-            summary: 'Delegar en sistemas automáticos decisiones sobre trabajo, crédito o reputación puede crear nuevos descartes [§ 102–103]; la IA no es moralmente neutra [§ 104] y alguien tiene que rendir cuentas [§ 105]. Pide prudencia y, a veces, ralentizar su adopción [§ 106]. Critica una “alineación” decidida por pocos [§ 107], pide tratar los datos como bien común [§ 108] y reconocer el trabajo invisible detrás de los modelos [§ 109]. Propone “desarmar” la IA: sacarla de la carrera por el algoritmo más potente y romper la idea de que el poder técnico da derecho a gobernar [§ 110]. Cierra con un llamado a los desarrolladores [§ 111].',
+            summary: 'Delegar en sistemas automáticos decisiones sobre trabajo, crédito o reputación puede crear nuevos descartes [§ 102–103]; la IA no es moralmente neutra [§ 104] y alguien tiene que rendir cuentas [§ 105]. Pide prudencia y, a veces, ralentizar su adopción [§ 106]. Critica una “alineación” decidida por pocos [§ 107], pide tratar los datos como bien común [§ 108] y reconocer el trabajo invisible detrás de los modelos [§ 109]. Propone “desarmar” la IA: sacarla de la carrera por el algoritmo más eficaz y romper la idea de que el poder técnico da derecho a gobernar [§ 110]. Cierra con un llamado a los desarrolladores [§ 111].',
           },
         ],
       },

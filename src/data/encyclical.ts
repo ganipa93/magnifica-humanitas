@@ -24,6 +24,7 @@ export const meta = {
 
 export const sections = [
   { id: 'frase', label: 'En una frase' },
+  { id: 'temas', label: 'Por tema' },
   { id: 'babel', label: 'Babel o Jerusalén' },
   { id: 'nuevo', label: 'Lo nuevo' },
   { id: 'economia', label: 'Economía' },

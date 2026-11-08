@@ -1,0 +1,105 @@
+---
+import Base from '../layouts/Base.astro';
+import Toc from '../components/Toc.astro';
+import Footer from '../components/Footer.astro';
+import Search from '../components/Search.astro';
+import RefPopover from '../components/RefPopover.astro';
+import { glossary } from '../data/glossary';
+import { chapters, walk, chapterHref } from '../data/structure';
+import { rich } from '../lib/rich';
+import { fold } from '../lib/fold';
+import { siteLinks } from '../lib/nav';
+
+const sorted = [...glossary].sort((a, b) => a.term.localeCompare(b.term, 'es'));
+
+// Dónde aparece cada término en los resúmenes de la encíclica (calculado en build)
+const leaves = chapters.flatMap((c) =>
+  [...walk(c)].filter(({ part }) => !part.parts).map(({ part, parent }) => ({ c, part, parent })),
+);
+const appears = (variants: string[]) =>
+  leaves.filter(({ part }) => variants.some((v) => fold(part.summary).includes(fold(v))));
+const name = (x: (typeof leaves)[number]) => (x.part.untitled ? `${x.parent?.title ?? x.c.title}: párrafos iniciales` : x.part.title);
+---
+<Base title="Glosario · Magnifica Humanitas, explicada" description="Los términos clave de la encíclica Magnifica Humanitas explicados en pocas líneas, con los párrafos donde aparecen.">
+  <header class="band">
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> Glosario</p>
+      <h1>Glosario</h1>
+      <p class="lede">Los términos que la encíclica da por sabidos, explicados en pocas líneas y con el párrafo donde los desarrolla. En el resto del sitio aparecen subrayados con puntos: tocalos para ver su definición.</p>
+    </div>
+  </header>
+
+  <Toc links={siteLinks('glosario')} home />
+
+  <main id="contenido" class="wrap body">
+    <label class="filter">
+      <span>Filtrar términos</span>
+      <input type="search" placeholder="Por ejemplo, subsidiariedad" autocomplete="off" data-filter>
+    </label>
+    <p class="none" hidden data-none>Ningún término coincide. Probá con otra palabra o usá el buscador general con <kbd>/</kbd>.</p>
+    <dl class="terms">
+      {sorted.map((t) => {
+        const where = appears(t.match);
+        return (
+          <div class="entry" id={t.id} data-key={fold(`${t.term} ${t.match.join(' ')}`)}>
+            <dt>{t.term}</dt>
+            <dd>
+              <p set:html={rich(t.def, { terms: false })} />
+              {where.length > 0 && (
+                <details class="where">
+                  <summary>Aparece en {where.length} {where.length === 1 ? 'sección' : 'secciones'}</summary>
+                  <ul>{where.map((w) => <li><a href={chapterHref(w.c, w.part)}>{name(w)}</a> <span>{w.c.label}</span></li>)}</ul>
+                </details>
+              )}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  </main>
+
+  <Footer />
+  <Search />
+  <RefPopover />
+</Base>
+
+<style>
+.band{background:var(--lapis);color:#F3F1E8;padding:28px 0 36px}
+.crumbs{font-family:var(--display);font-stretch:85%;font-size:.95rem;color:#B7BCD6;margin:0 0 28px}
+.crumbs a{color:#D7DAEA}
+h1{font-family:var(--display);font-stretch:115%;font-weight:800;font-size:clamp(2.2rem,6vw,4.2rem);line-height:1;margin:0}
+.lede{max-width:36em;color:#D7DAEA;margin:18px 0 0;font-size:1.15rem}
+.body{padding-top:40px;padding-bottom:48px}
+.filter{display:flex;flex-direction:column;gap:6px;max-width:28em;font-family:var(--display);font-stretch:85%;color:var(--muted)}
+.filter input{font:inherit;font-size:1.1rem;color:var(--ink);background:var(--paper);border:1px solid var(--rule);padding:10px 12px}
+.filter input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.none{margin-top:20px;color:var(--muted)}
+.terms{margin:28px 0 0;columns:2 420px;column-gap:48px}
+.entry{break-inside:avoid;padding:18px 0;border-top:1px solid var(--rule)}
+dt{font-family:var(--display);font-stretch:95%;font-weight:700;font-size:1.2rem;margin-bottom:6px}
+dd{margin:0}
+dd p{margin-bottom:8px}
+.where summary{cursor:pointer;font-family:var(--display);font-stretch:85%;font-size:.9rem;color:var(--muted)}
+.where summary:hover{color:var(--ink)}
+.where ul{margin:8px 0 0;padding-left:1.1em;font-family:var(--display);font-stretch:90%;font-size:.95rem;line-height:1.4}
+.where li{margin-bottom:4px}
+.where li span{color:var(--muted);font-size:.85em}
+.entry:target dt{color:var(--gold)}
+</style>
+
+<script>
+  import { fold } from '../lib/fold';
+  const input = document.querySelector<HTMLInputElement>('[data-filter]')!;
+  const entries = [...document.querySelectorAll<HTMLElement>('.entry')];
+  const none = document.querySelector<HTMLElement>('[data-none]')!;
+  input.addEventListener('input', () => {
+    const q = fold(input.value.trim());
+    let shown = 0;
+    for (const e of entries) {
+      const ok = !q || e.dataset.key!.includes(q) || fold(e.textContent ?? '').includes(q);
+      e.hidden = !ok;
+      if (ok) shown++;
+    }
+    none.hidden = shown > 0;
+  });
+</script>
