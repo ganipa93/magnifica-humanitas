@@ -20,6 +20,7 @@ Todo el contenido se verificó contra el texto oficial. Entre comillas va solo t
 - **Glosario integrado**: los términos clave aparecen subrayados en el texto y muestran su definición al tocarlos; página propia con filtro y con las secciones donde aparece cada uno.
 - **Cómo se leyó**: lecturas de la encíclica desde la tecnología, la economía, la prensa y el catolicismo crítico, resumidas y con enlace a cada fuente.
 - **A quién cita**: las 30 personas, obras e instituciones que nombra el texto, con su párrafo y filtro por grupo.
+- **Escuchar**: cada capítulo se puede escuchar en voz alta con la voz del navegador, desde el principio o desde cualquier sección, con pausa y velocidad. Omite las referencias § para que la lectura fluya. Si el navegador no tiene voz, el control no aparece.
 - **Modo estudio**: marcar partes como leídas, ver el avance por capítulo e imprimir o guardar cada capítulo en PDF.
 - **135 años en una línea**: los documentos de la Doctrina social que repasa el capítulo 1, ubicados en su año.
 - **¿Lo dice o no lo dice?**: afirmaciones que circulan sobre la encíclica, con la respuesta y el párrafo para comprobarla.

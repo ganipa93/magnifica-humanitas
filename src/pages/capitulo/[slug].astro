@@ -31,13 +31,25 @@ const leaves = [...walk(c)].filter(({ part }) => !part.parts).map(({ part }) => 
   <header class="band">
     <div class="wrap">
       <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> {c.label}</p>
-      <h1><span class="lab">{c.label}</span>{c.title}</h1>
+      <h1>{c.label !== c.title && <span class="lab">{c.label}</span>}{c.title}</h1>
       <p class="facts">§ {r.from}–{r.to} · {total} párrafos · {c.sections.filter((s) => !s.untitled).length} secciones</p>
       <p class="lede" set:html={rich(c.lede)} />
       <div class="study" data-leaves={leaves.join(',')}>
         <div class="bar" aria-hidden="true"><span></span></div>
         <p><span data-count data-empty={`${leaves.length} partes · marcá las que vayas leyendo`}>{leaves.length} partes · marcá las que vayas leyendo</span>
           <button type="button" class="print" data-print>Imprimir o guardar en PDF</button></p>
+      </div>
+      <div class="listen" data-listen hidden>
+        <button type="button" class="play" data-listen-play aria-pressed="false">Escuchar el capítulo</button>
+        <button type="button" class="stop" data-listen-stop hidden>Detener</button>
+        <label class="rate">Velocidad
+          <select data-listen-rate>
+            <option value="0.85">Lenta</option>
+            <option value="1" selected>Normal</option>
+            <option value="1.2">Rápida</option>
+          </select>
+        </label>
+        <span class="status" data-listen-status aria-live="polite"></span>
       </div>
       <nav class="course" aria-label={`Secciones de ${c.label}`}>
         {c.sections.map((s) => (
@@ -73,23 +85,31 @@ const leaves = [...walk(c)].filter(({ part }) => !part.parts).map(({ part }) => 
 
     <div class="content">
       {c.sections.map((s) => (
-        <section class="part" id={partId(s)}>
+        <section class="part" id={partId(s)} data-speak={s.parts ? undefined : String(s.from)}>
           <h2 class:list={{ muted: s.untitled }}>{name(s)}</h2>
           <p class="range" set:html={refButton(span(s))} />
           <p class="summary" set:html={rich(s.summary)} />
           {!s.parts && topicsOf(s.from).length > 0 && (
             <p class="tags">Temas: {topicsOf(s.from).map((t) => <a href={topicHref(t)}>{t.label}</a>)}</p>
           )}
-          {!s.parts && <button type="button" class="mark" data-mark={s.from} aria-pressed="false">Marcar como leída</button>}
+          {!s.parts && (
+            <p class="actions">
+              <button type="button" class="mark" data-mark={s.from} aria-pressed="false">Marcar como leída</button>
+              <button type="button" class="listen-from" data-listen-from={String(s.from)} hidden>Escuchar desde acá</button>
+            </p>
+          )}
           {s.parts?.map((p) => (
-            <article class="sub" id={partId(p)}>
+            <article class="sub" id={partId(p)} data-speak={String(p.from)}>
               <h3 class:list={{ muted: p.untitled }}>{name(p)}</h3>
               <p class="range" set:html={refButton(span(p))} />
               <p class="summary" set:html={rich(p.summary)} />
               {topicsOf(p.from).length > 0 && (
                 <p class="tags">Temas: {topicsOf(p.from).map((t) => <a href={topicHref(t)}>{t.label}</a>)}</p>
               )}
-              <button type="button" class="mark" data-mark={p.from} aria-pressed="false">Marcar como leída</button>
+              <p class="actions">
+                <button type="button" class="mark" data-mark={p.from} aria-pressed="false">Marcar como leída</button>
+                <button type="button" class="listen-from" data-listen-from={String(p.from)} hidden>Escuchar desde acá</button>
+              </p>
             </article>
           ))}
         </section>
@@ -162,7 +182,22 @@ h3{margin-bottom:2px}
 .study p{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;margin:8px 0 0;font-family:var(--display);font-stretch:85%;font-size:.92rem;color:#B7BCD6}
 .study.complete [data-count]{color:#D9B24A}
 .print{background:none;border:0;padding:0;color:#D7DAEA;cursor:pointer;text-decoration:underline;text-decoration-color:#D9B24A;text-underline-offset:.2em;font:inherit}
-.mark{margin-top:10px;font-family:var(--display);font-stretch:85%;font-size:.9rem;background:none;border:1px solid var(--rule);color:var(--muted);padding:4px 12px;cursor:pointer}
+.listen{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 26px;font-family:var(--display);font-stretch:85%;font-size:.95rem;color:#D7DAEA}
+.listen[hidden]{display:none}
+.listen .play{background:#D9B24A;color:#1C2A5E;border:0;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer;min-height:36px}
+.listen .play:hover{background:#E8C665}
+.listen .stop{background:none;border:1px solid #4A5590;color:#D7DAEA;padding:6px 12px;font:inherit;cursor:pointer;min-height:36px}
+.listen .rate{display:flex;align-items:center;gap:6px;color:#B7BCD6}
+.listen select{font:inherit;color:#1C2A5E;background:#E9E6DA;border:0;padding:5px 6px;min-height:32px}
+.listen .status{flex-basis:100%;color:#B7BCD6;font-size:.9rem;min-height:1.2em}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.listen-from{font-family:var(--display);font-stretch:85%;font-size:.9rem;background:none;border:1px solid var(--rule);color:var(--muted);padding:4px 12px;cursor:pointer;min-height:32px}
+.listen-from:hover{border-color:var(--muted);color:var(--ink)}
+.listen-from[hidden]{display:none}
+/* Parte que se está leyendo en voz alta */
+.part.speaking,.sub.speaking{background:color-mix(in srgb,var(--gold) 9%,transparent);box-shadow:-12px 0 0 color-mix(in srgb,var(--gold) 9%,transparent)}
+.sub.speaking{border-left-color:var(--gold)}
+.mark{font-family:var(--display);font-stretch:85%;font-size:.9rem;background:none;border:1px solid var(--rule);color:var(--muted);padding:4px 12px;cursor:pointer}
 .mark:hover{border-color:var(--muted);color:var(--ink)}
 .mark[aria-pressed="true"]{border-color:var(--gold);color:var(--ink)}
 .mark[aria-pressed="true"]::before{content:"✓ ";color:var(--gold)}
@@ -171,7 +206,7 @@ h3{margin-bottom:2px}
 
 @media print{
   .band{background:none;color:#000;padding:0 0 12px}
-  .band .crumbs,.band .course,.study,.mark,.tags{display:none}
+  .band .crumbs,.band .course,.study,.listen,.actions,.tags{display:none}
   .band :global(.ref){color:#000}
   h1,.lede,.facts,.study p{color:#000}
   h1 .lab{color:#000}
@@ -197,5 +232,7 @@ h3{margin-bottom:2px}
 
 <script>
   import { initStudy } from '../../scripts/study';
+  import { initListen } from '../../scripts/listen';
   initStudy();
+  initListen();
 </script>
