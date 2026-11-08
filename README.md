@@ -33,8 +33,8 @@ src/
   lib/search-index.ts   índice de búsqueda generado en build
   components/           una sección por componente
   pages/capitulo/       una página por capítulo, generada desde structure.ts
-scripts/check-data.ts   verificación de integridad (corre antes de cada build)
   scripts/              búsqueda, popover de §, índice activo, tema
+scripts/check-data.ts   verificación de integridad (corre antes de cada build)
 ```
 
 Para editar contenido alcanza con tocar los archivos de `src/data/`: la muralla, las páginas de capítulo y el índice de búsqueda se generan solos. Antes de cada build, `npm run check:data` comprueba que los capítulos cubran los 245 párrafos sin huecos ni superposiciones, que cada resumen cite solo párrafos de su propio rango y que las comillas estén balanceadas.
