@@ -100,3 +100,13 @@ kbd{font-family:var(--display);font-stretch:80%;font-size:.8em;border:1px solid 
 .term-pop{width:min(360px,calc(100vw - 32px))}
 .term-pop .def{font-family:var(--text);font-stretch:100%;font-size:1rem;line-height:1.5;margin:0 0 10px}
 .term-pop .where{margin-bottom:6px}
+
+/* ---------- Impresión ---------- */
+@media print{
+  :root{--vellum:#fff;--paper:#fff;--ink:#000;--muted:#333;--gold:#000;--rule:#bbb;--stone:#ddd}
+  body{font-size:11pt;background:#fff}
+  .toc,.skip,.pop,.toast,dialog,footer{display:none !important}
+  .ref{color:#000;font-weight:600}
+  .term{text-decoration:none}
+  a{text-decoration:none}
+}

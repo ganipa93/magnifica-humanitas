@@ -6,9 +6,11 @@ import { parseRef, plain, refsIn } from './rich';
 import { topics } from '../data/topics';
 import { glossary } from '../data/glossary';
 import { topicHref } from './topics';
+import { cited } from '../data/people';
+import { reception } from '../data/reception';
 
 export interface Entry {
-  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia' | 'Tema' | 'Glosario';
+  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia' | 'Tema' | 'Glosario' | 'Cita' | 'Recepción';
   title: string;
   /** Contexto (capítulo, sección madre) */
   where?: string;
@@ -89,6 +91,14 @@ export function buildIndex(): Entry[] {
 
   for (const g of glossary)
     e.push({ kind: 'Glosario', title: g.term, href: `/glosario/#${g.id}`, text: plain(g.def), refs: refsIn(g.def) });
+
+  for (const g of cited)
+    for (const c of g.items)
+      e.push({ kind: 'Cita', title: plain(c.name), where: g.label, href: '/#citas', text: plain(c.note), refs: parseRef(c.ref) });
+
+  for (const st of reception)
+    for (const v of st.voices)
+      e.push({ kind: 'Recepción', title: v.who, where: st.label, href: '/#recepcion', text: plain(v.reading), refs: [] });
 
   quotes.forEach((q, i) =>
     e.push({ kind: 'Frase', title: `“${q.text}”`, href: `/#frase-${i + 1}`, text: '', refs: parseRef(q.ref) }),

@@ -12,6 +12,8 @@ import { topics } from '../src/data/topics';
 import { glossary } from '../src/data/glossary';
 import { leafStarts } from '../src/lib/topics';
 import { fold } from '../src/lib/fold';
+import { cited } from '../src/data/people';
+import { reception } from '../src/data/reception';
 import { parseRef, refsIn } from '../src/lib/rich';
 
 const TOTAL = 245;
@@ -70,6 +72,13 @@ const collect = (v: unknown): void => {
 };
 collect(home);
 collect(glossary);
+collect(cited);
+collect(reception);
+for (const st of reception)
+  for (const v of st.voices) {
+    if (!/^https:\/\//.test(v.source.url)) fail(`Recepción: "${v.who}" sin enlace https a su fuente`);
+    if (/[“"]/.test(v.reading)) fail(`Recepción: "${v.who}" tiene comillas; las lecturas van parafraseadas`);
+  }
 chapters.forEach((c) => collect(c));
 for (const t of texts) for (const r of refsIn(t)) if (r < 1 || r > TOTAL) fail(`Referencia fuera de rango: § ${r} en "${t.slice(0, 50)}…"`);
 for (const r of refs) for (const n of parseRef(r)) if (n < 1 || n > TOTAL) fail(`Referencia fuera de rango: § ${n}`);

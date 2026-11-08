@@ -18,6 +18,9 @@ Todo el contenido se verificó contra el texto oficial. Entre comillas va solo t
 - **Economía**: resaltar una de las dos lecturas para ver qué párrafos usa cada lado.
 - **Recorridos por tema**: once temas (IA, datos, trabajo, guerra, educación…) que juntan las secciones de todos los capítulos, con una franja que muestra dónde aparece cada tema en los 245 párrafos.
 - **Glosario integrado**: los términos clave aparecen subrayados en el texto y muestran su definición al tocarlos; página propia con filtro y con las secciones donde aparece cada uno.
+- **Cómo se leyó**: lecturas de la encíclica desde la tecnología, la economía, la prensa y el catolicismo crítico, resumidas y con enlace a cada fuente.
+- **A quién cita**: las 30 personas, obras e instituciones que nombra el texto, con su párrafo y filtro por grupo.
+- **Modo estudio**: marcar partes como leídas, ver el avance por capítulo e imprimir o guardar cada capítulo en PDF.
 - **135 años en una línea**: los documentos de la Doctrina social que repasa el capítulo 1, ubicados en su año.
 - **¿Lo dice o no lo dice?**: afirmaciones que circulan sobre la encíclica, con la respuesta y el párrafo para comprobarla.
 - **Compartir frases**: copia la cita con su enlace (o usa el menú de compartir en el celular).
@@ -33,6 +36,8 @@ src/
   data/encyclical.ts    contenido de la portada (ideas nuevas, economía, línea de tiempo, prueba)
   data/topics.ts        recorridos por tema (qué secciones toca cada uno)
   data/glossary.ts      términos, variantes y definiciones
+  data/people.ts        personas, obras e instituciones citadas
+  data/reception.ts     lecturas de la encíclica, con fuente
   lib/terms.ts          subraya en el texto el primer uso de cada término
   lib/rich.ts           mini-sintaxis del contenido: [§ 71–72], *itálica*, **énfasis**
   lib/search-index.ts   índice de búsqueda generado en build
@@ -52,6 +57,6 @@ npm run dev      # http://localhost:4321
 npm run build    # chequea tipos y genera dist/
 ```
 
-Se publica en Vercel (`vercel.json` fija el framework Astro).
+Se publica en Vercel (`vercel.json` fija el framework Astro). Las visitas se miden con Vercel Web Analytics (anónimo, sin cookies); hay que activarlo una vez en el panel del proyecto.
 
 No es un sitio oficial de la Santa Sede.

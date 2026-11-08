@@ -1,0 +1,61 @@
+---
+import { cited } from '../data/people';
+import { rich, refButton } from '../lib/rich';
+const total = cited.reduce((n, g) => n + g.items.length, 0);
+---
+<section id="citas">
+  <div class="wrap">
+    <h2>A quién cita</h2>
+    <p class="measure">Además de papas y documentos de la Iglesia, la encíclica nombra a {total} personas, obras e instituciones. Están todas, con el párrafo donde aparecen y para qué las usa el texto.</p>
+
+    <div class="filters" role="group" aria-label="Filtrar por grupo">
+      <button type="button" aria-pressed="true" data-group="">Todas</button>
+      {cited.map((g) => <button type="button" aria-pressed="false" data-group={g.id}>{g.label}</button>)}
+    </div>
+
+    <div class="groups">
+      {cited.map((g) => (
+        <section class="group" data-id={g.id} aria-labelledby={`citas-${g.id}`}>
+          <h3 id={`citas-${g.id}`}>{g.label}</h3>
+          {g.intro && <p class="intro" set:html={rich(g.intro)} />}
+          <ul>
+            {g.items.map((c) => (
+              <li>
+                <span class="name" set:html={rich(c.name, { terms: false })} />
+                <Fragment set:html={refButton(c.ref)} />
+                <span class="note" set:html={rich(c.note)} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:24px}
+.filters button{font-family:var(--display);font-stretch:85%;font-size:.95rem;background:var(--paper);border:1px solid var(--rule);padding:6px 12px;cursor:pointer;color:var(--muted)}
+.filters button:hover{color:var(--ink);border-color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--vellum)}
+.groups{margin-top:28px;columns:2 440px;column-gap:48px}
+.group{break-inside:avoid;padding:0 0 24px;border:0}
+.group[hidden]{display:none}
+h3{border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:10px}
+.intro{color:var(--muted);font-size:1rem;margin-bottom:8px}
+ul{list-style:none;margin:0;padding:0}
+li{padding:9px 0;border-bottom:1px solid var(--rule)}
+.name{font-family:var(--display);font-stretch:92%;font-weight:650}
+.note{display:block;color:var(--muted);font-size:1rem;line-height:1.45;margin-top:2px}
+</style>
+
+<script>
+  const root = document.getElementById('citas')!;
+  const btns = [...root.querySelectorAll<HTMLButtonElement>('[data-group]')];
+  const groups = [...root.querySelectorAll<HTMLElement>('.group')];
+  btns.forEach((b) => b.addEventListener('click', () => {
+    btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    const id = b.dataset.group;
+    groups.forEach((g) => (g.hidden = !!id && g.dataset.id !== id));
+  }));
+</script>

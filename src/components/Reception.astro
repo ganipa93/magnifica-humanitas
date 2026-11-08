@@ -1,0 +1,38 @@
+---
+import { reception } from '../data/reception';
+import { rich } from '../lib/rich';
+---
+<section id="recepcion">
+  <div class="wrap">
+    <h2>Cómo se leyó</h2>
+    <p class="measure">La encíclica recibió elogios y críticas desde lugares muy distintos. Acá están algunas lecturas representativas, resumidas con nuestras palabras y con el enlace para leerlas completas. Las opiniones son de sus autores; las tensiones que vemos nosotros están más arriba.</p>
+    <div class="stances">
+      {reception.map((s) => (
+        <section class="stance" aria-labelledby={`rec-${s.id}`}>
+          <h3 id={`rec-${s.id}`}>{s.label}</h3>
+          {s.voices.map((v) => (
+            <article class="voice">
+              <p class="who"><b>{v.who}</b><span>{v.where} · {v.date}</span></p>
+              <p class="reading" set:html={rich(v.reading)} />
+              <a class="src" href={v.source.url} target="_blank" rel="noopener">Leer en {v.source.label}</a>
+            </article>
+          ))}
+        </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.stances{display:grid;grid-template-columns:1fr 1fr;gap:8px 48px;margin-top:28px}
+.stance{padding:0;border:0}
+h3{border-bottom:2px solid var(--ink);padding-bottom:6px;margin:12px 0 4px}
+.voice{padding:14px 0;border-bottom:1px solid var(--rule)}
+.who{margin:0 0 4px;font-family:var(--display);font-stretch:92%;line-height:1.3}
+.who b{display:block;font-weight:650}
+.who span{font-stretch:82%;font-size:.88rem;color:var(--muted)}
+.reading{font-size:1rem;line-height:1.55;margin-bottom:6px}
+.src{font-family:var(--display);font-stretch:85%;font-size:.9rem;color:var(--muted)}
+.src:hover{color:var(--ink)}
+@media (max-width:820px){.stances{grid-template-columns:1fr}}
+</style>

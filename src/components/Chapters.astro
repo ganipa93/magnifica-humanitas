@@ -1,17 +1,23 @@
 ---
-import { chapters, chapterRange, chapterHref } from '../data/structure';
+import { chapters, chapterRange, chapterHref, walk } from '../data/structure';
+const leavesOf = (c: (typeof chapters)[number]) => [...walk(c)].filter(({ part }) => !part.parts).map(({ part }) => part.from).join(',');
 import { rich } from '../lib/rich';
 ---
 <section id="capitulos">
   <div class="wrap">
     <h2>Capítulo por capítulo</h2>
-    <p class="measure">Cada capítulo tiene su página con todas sus secciones resumidas, de la primera a la última, y la referencia a cada párrafo.</p>
+    <div class="head">
+      <p class="measure">Cada capítulo tiene su página con todas sus secciones resumidas, de la primera a la última, y la referencia a cada párrafo. Si marcás las secciones que vas leyendo, acá ves tu avance.</p>
+      <button type="button" class="reset" data-reset-read hidden>Borrar mi avance</button>
+    </div>
     <div class="chapters">
       {chapters.map((c) => {
         const r = chapterRange(c);
         return (
           <article class="chapter" id={c.id}>
-            <div class="num">{c.short}<small>§ {r.from}–{r.to}</small></div>
+            <div class="num">{c.short}<small>§ {r.from}–{r.to}</small>
+              <div class="prog" data-leaves={leavesOf(c)}><span class="bar" aria-hidden="true"><span></span></span><small data-count data-empty=""></small></div>
+            </div>
             <div>
               <h3><a href={chapterHref(c)}>{c.title}</a></h3>
               <p set:html={rich(c.lede)} />
@@ -40,6 +46,18 @@ p{max-width:40em}
 .parts{list-style:none;margin:4px 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--display);font-stretch:85%;font-size:.95rem}
 .parts a{color:var(--muted);text-decoration:none}
 .parts a:hover{color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold)}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.reset{background:none;border:0;padding:0;cursor:pointer;font-family:var(--display);font-stretch:85%;color:var(--muted);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.2em}
+.prog{display:none;margin-top:12px;max-width:150px}
+.prog.started{display:block}
+.prog .bar{display:block;height:4px;background:var(--stone)}
+.prog .bar span{display:block;height:100%;background:var(--gold);transform-origin:left;transform:scaleX(var(--done,0))}
+.prog small{font-stretch:80%;font-size:.78rem;line-height:1.3;margin-top:6px}
 .go{font-family:var(--display);font-stretch:90%;font-weight:600;text-decoration-thickness:2px}
 @media (max-width:820px){.chapter{grid-template-columns:1fr;gap:6px}}
 </style>
+
+<script>
+  import { initStudy } from '../scripts/study';
+  initStudy();
+</script>

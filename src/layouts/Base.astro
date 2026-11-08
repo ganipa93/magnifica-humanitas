@@ -43,5 +43,7 @@ const og = new URL('/og.png', Astro.site);
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
   <slot />
+  <!-- Vercel Web Analytics: anónimo y sin cookies. Solo envía datos si está activado en el proyecto. -->
+  <script is:inline defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
