@@ -34,8 +34,13 @@ export function initToc() {
       links.get(current)?.forEach((a) => a.removeAttribute('aria-current'));
       links.get(active)?.forEach((a) => {
         a.setAttribute('aria-current', 'true');
-        // Solo la barra superior se desplaza horizontalmente hacia el enlace activo
-        if (a.closest('.toc')) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+        // Centra el enlace activo moviendo SOLO el contenedor horizontal de la barra.
+        // No usar scrollIntoView: también inicia un scroll en la ventana y corta el del usuario.
+        const strip = a.closest<HTMLElement>('.toc .links');
+        if (strip) {
+          const left = a.offsetLeft - strip.offsetLeft - (strip.clientWidth - a.offsetWidth) / 2;
+          strip.scrollTo({ left, behavior: 'smooth' });
+        }
       });
       current = active;
     }
