@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Footer from '../components/Footer.astro';
+import { chapters, chapterHref } from '../data/structure';
+---
+<Base kind="page" crumb="Página no encontrada" title="Página no encontrada · Magnifica Humanitas, explicada" description="Esta página no existe. Volvé a la guía de la encíclica Magnifica Humanitas." noindex>
+  <main id="contenido" class="wrap nf">
+    <p class="k">Error 404</p>
+    <h1>Esa página no está en la muralla</h1>
+    <p class="lede">Puede que el enlace esté viejo o mal escrito. Estos son los tramos que sí existen:</p>
+    <ul>
+      <li><a href="/">La guía completa</a></li>
+      {chapters.map((c) => <li><a href={chapterHref(c)}>{c.label}: {c.title}</a></li>)}
+      <li><a href="/glosario/">Glosario</a></li>
+    </ul>
+  </main>
+  <Footer />
+</Base>
+<style>
+.nf{padding-top:72px;padding-bottom:24px}
+.k{font-family:var(--display);font-stretch:80%;font-weight:600;color:var(--gold);margin:0 0 8px}
+h1{font-family:var(--display);font-stretch:110%;font-weight:750;font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.1;margin:0 0 20px}
+ul{padding-left:1.2em;line-height:1.9}
+</style>

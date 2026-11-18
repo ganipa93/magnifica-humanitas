@@ -1,11 +1,36 @@
 ---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/literata/opsz.css';
+import '@fontsource-variable/literata/opsz-italic.css';
 import '../styles/global.css';
 import { meta } from '../data/encyclical';
 
-interface Props { title?: string; description?: string }
-const { title = meta.title, description = meta.description } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  /** 'home' = la guía completa; 'page' = capítulo, tema o glosario (Article propio, dentro de la guía) */
+  kind?: 'home' | 'page';
+  /** Nombre corto para el breadcrumb de las páginas internas */
+  crumb?: string;
+  noindex?: boolean;
+}
+const { title = meta.title, description = meta.description, kind = 'home', crumb, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const og = new URL('/og.png', Astro.site);
+const home = new URL('/', Astro.site).href;
+const about = { '@type': 'CreativeWork', name: 'Magnifica Humanitas', author: { '@type': 'Person', name: 'León XIV' }, datePublished: '2026-05-15' };
+const jsonLd = kind === 'home'
+  ? { '@context': 'https://schema.org', '@type': 'Article', headline: meta.title, description, inLanguage: 'es-AR', about }
+  : {
+      '@context': 'https://schema.org',
+      '@graph': [
+        { '@type': 'Article', headline: title, description, inLanguage: 'es-AR', url: canonical.href, about, isPartOf: { '@type': 'WebSite', name: meta.title, url: home } },
+        { '@type': 'BreadcrumbList', itemListElement: [
+          { '@type': 'ListItem', position: 1, name: meta.title, item: home },
+          { '@type': 'ListItem', position: 2, name: crumb ?? title, item: canonical.href },
+        ] },
+      ],
+    };
 ---
 <!doctype html>
 <html lang="es-AR">
@@ -14,31 +39,22 @@ const og = new URL('/og.png', Astro.site);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content={description}>
+  {noindex && <meta name="robots" content="noindex">}
   <link rel="canonical" href={canonical}>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#1C2A5E">
   <meta property="og:title" content={title}>
-  <meta property="og:description" content="Qué dice la encíclica de León XIV sobre la inteligencia artificial, párrafo por párrafo.">
+  <meta property="og:description" content={description}>
   <meta property="og:type" content="article">
   <meta property="og:locale" content="es_AR">
   <meta property="og:url" content={canonical}>
   <meta property="og:image" content={og}>
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,400&display=swap" rel="stylesheet">
   <!-- Aplica el tema guardado antes del primer pintado, sin parpadeo -->
   <script is:inline>
     try{var t=localStorage.getItem('mh-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}
   </script>
-  <script type="application/ld+json" set:html={JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: meta.title,
-    description: meta.description,
-    inLanguage: 'es-AR',
-    about: { '@type': 'CreativeWork', name: 'Magnifica Humanitas', author: { '@type': 'Person', name: 'León XIV' }, datePublished: '2026-05-15' },
-  })} />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>

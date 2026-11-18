@@ -27,7 +27,7 @@ const total = r.to - r.from + 1;
 const links = siteLinks(c.slug);
 const leaves = [...walk(c)].filter(({ part }) => !part.parts).map(({ part }) => part.from);
 ---
-<Base title={`${c.label}: ${c.title} · Magnifica Humanitas, explicada`} description={c.lede.replace(/\[§[^\]]+\]/g, '').replace(/\*/g, '')}>
+<Base kind="page" crumb={`${c.label}: ${c.title}`} title={`${c.label}: ${c.title} · Magnifica Humanitas, explicada`} description={c.lede.replace(/\[§[^\]]+\]/g, '').replace(/\*/g, '')}>
   <header class="band">
     <div class="wrap">
       <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> {c.label}</p>

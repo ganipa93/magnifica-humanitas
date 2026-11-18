@@ -3,14 +3,23 @@ import { goTo } from './jump';
 import type { Entry } from '../lib/search-index';
 
 interface MapPart { c: string; s: string; t: string; f: number; to: number; href: string }
-interface Data { index: Entry[]; map: MapPart[] }
 
-let data: Data | null = null;
-const load = (): Data => (data ??= JSON.parse(document.getElementById('search-data')!.textContent!));
+let map: MapPart[] | null = null;
+const load = (): MapPart[] => (map ??= JSON.parse(document.getElementById('search-map')!.textContent!));
+
+/** El índice completo (~75 KB) se baja una sola vez, recién cuando se abre la búsqueda. */
+let index: Entry[] | null = null;
+let pending: Promise<Entry[]> | null = null;
+const ensureIndex = (): Promise<Entry[]> =>
+  index ? Promise.resolve(index)
+    : (pending ??= fetch('/search-index.json')
+        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json() as Promise<Entry[]>; })
+        .then((d) => (index = d))
+        .catch((e) => { pending = null; throw e; }));
 
 /** Ubica un párrafo en la estructura usando el mapa incrustado (sin cargar todo el contenido). */
 export function locateRef(n: number): MapPart | undefined {
-  return load().map.find((p) => n >= p.f && n <= p.to);
+  return load().find((p) => n >= p.f && n <= p.to);
 }
 
 /** "Capítulo 3 · La inteligencia artificial · Párrafos iniciales" */
@@ -21,6 +30,7 @@ let input: HTMLInputElement;
 
 export function openSearch(q = '') {
   if (!dialog) return;
+  ensureIndex().catch(() => {});
   if (!dialog.open) dialog.showModal();
   input.value = q;
   input.dispatchEvent(new Event('input'));
@@ -99,7 +109,13 @@ export function initSearch() {
   };
 
   const render = () => {
-    const { index } = load();
+    if (!index) {
+      list.innerHTML = '<li class="empty">Cargando la búsqueda…</li>';
+      ensureIndex().then(render).catch(() => {
+        list.innerHTML = '<li class="empty">No se pudo cargar la búsqueda. Revisá tu conexión y volvé a intentar.</li>';
+      });
+      return;
+    }
     const raw = input.value.trim();
     const num = raw.match(/^§?\s*(\d{1,3})$/);
     const terms = fold(raw).split(/\s+/).filter((t) => t.length > 1 && !/^§?\d+$/.test(t));

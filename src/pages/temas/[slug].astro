@@ -22,7 +22,7 @@ const groups = chapters
 const span = (a: number, b: number) => (a === b ? `${a}` : `${a}–${b}`);
 const others = topics.filter((x) => x.slug !== t.slug);
 ---
-<Base title={`${t.label} en Magnifica Humanitas · recorrido por tema`} description={t.intro}>
+<Base kind="page" crumb={t.label} title={`${t.label} en Magnifica Humanitas · recorrido por tema`} description={t.intro}>
   <header class="band">
     <div class="wrap">
       <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> <a href="/#temas">Recorridos por tema</a></p>

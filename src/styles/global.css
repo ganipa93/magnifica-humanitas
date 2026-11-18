@@ -11,8 +11,8 @@
   --stone:#D6D9E3;
   --rule:#D9DCE6;
   --shadow:0 18px 50px -20px rgba(16,20,43,.35);
-  --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
-  --text:"Literata", Georgia, serif;
+  --display:"Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --text:"Literata Variable", "Literata", Georgia, serif;
   --toc-h:48px;
   color-scheme:light;
 }

@@ -20,7 +20,7 @@ const appears = (variants: string[]) =>
   leaves.filter(({ part }) => variants.some((v) => fold(part.summary).includes(fold(v))));
 const name = (x: (typeof leaves)[number]) => (x.part.untitled ? `${x.parent?.title ?? x.c.title}: párrafos iniciales` : x.part.title);
 ---
-<Base title="Glosario · Magnifica Humanitas, explicada" description="Los términos clave de la encíclica Magnifica Humanitas explicados en pocas líneas, con los párrafos donde aparecen.">
+<Base kind="page" crumb="Glosario" title="Glosario · Magnifica Humanitas, explicada" description="Los términos clave de la encíclica Magnifica Humanitas explicados en pocas líneas, con los párrafos donde aparecen.">
   <header class="band">
     <div class="wrap">
       <p class="crumbs"><a href="/">Magnifica Humanitas, explicada</a> <span aria-hidden="true">/</span> Glosario</p>

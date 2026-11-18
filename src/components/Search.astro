@@ -1,6 +1,5 @@
 ---
-import { buildIndex, buildMap } from '../lib/search-index';
-const index = buildIndex();
+import { buildMap } from '../lib/search-index';
 const map = buildMap();
 ---
 <dialog class="search" aria-label="Buscar en la guía" data-search>
@@ -18,7 +17,8 @@ const map = buildMap();
     <span><kbd>Enter</kbd> para ir</span>
   </p>
 </dialog>
-<script type="application/json" id="search-data" set:html={JSON.stringify({ index, map })} />
+<!-- Solo el mapa de párrafos va en cada página; el índice completo se baja de /search-index.json al abrir la búsqueda -->
+<script type="application/json" id="search-map" set:html={JSON.stringify(map)} />
 
 <style>
 .search{
