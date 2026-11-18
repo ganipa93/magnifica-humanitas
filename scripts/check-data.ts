@@ -55,6 +55,17 @@ for (const t of topics) {
 }
 if (new Set(topics.map((t) => t.slug)).size !== topics.length) fail('Temas con slug repetido');
 
+// Ruta corta: cada paso es el inicio de una sección real, sin repetidos y en el orden del texto
+{
+  const ok = new Set(leafStarts());
+  let prev = 0;
+  for (const st of home.route.steps) {
+    if (!ok.has(st.from)) fail(`Ruta corta: § ${st.from} no es el inicio de ninguna sección`);
+    if (st.from <= prev) fail(`Ruta corta: § ${st.from} está repetido o fuera de orden`);
+    prev = st.from;
+  }
+}
+
 // Glosario: ids únicos y cada término usado al menos una vez en el contenido
 if (new Set(glossary.map((g) => g.id)).size !== glossary.length) fail('Glosario con ids repetidos');
 const corpus = fold(JSON.stringify([home, chapters]));

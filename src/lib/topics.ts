@@ -11,6 +11,9 @@ for (const c of chapters)
 
 export const leafStarts = () => [...leaves.keys()];
 
+/** La sección hoja que empieza en el párrafo n, si existe. */
+export const leafAt = (n: number) => leaves.get(n);
+
 export function topicHits(t: Topic): Hit[] {
   return [...t.parts].sort((a, b) => a - b).map((n) => leaves.get(n)!).filter(Boolean);
 }

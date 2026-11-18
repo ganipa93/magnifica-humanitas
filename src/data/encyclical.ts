@@ -24,6 +24,7 @@ export const meta = {
 
 export const sections = [
   { id: 'frase', label: 'En una frase' },
+  { id: 'ruta', label: 'Ruta corta' },
   { id: 'temas', label: 'Por tema' },
   { id: 'babel', label: 'Babel o Jerusalén' },
   { id: 'nuevo', label: 'Lo nuevo' },
@@ -43,6 +44,26 @@ export const summary = {
   body: [
     'León XIV se pone en la línea de León XIII: la encíclica sale en el 135° aniversario de *Rerum novarum* (1891) [§ 3], que había respondido a la cuestión obrera [§ 29]. Hoy la novedad es la digitalización, la IA y la robótica [§ 4], y el texto aclara que no las trata como un tema más sino como algo que interpela desde adentro las categorías de la Doctrina social [§ 17]: el bien común, el destino universal de los bienes, la subsidiariedad y la justicia social [§ 46].',
     'Su pregunta de fondo no es “IA sí o no”. Es **quién la controla y al servicio de qué** [§ 5, 9].',
+  ],
+};
+
+/**
+ * Ruta corta: nueve secciones, en el orden del texto, que dan la idea general.
+ * `from` es el párrafo inicial de una sección hoja (check-data lo verifica);
+ * el título, el rango y el resumen salen de structure.ts, y `role` es solo el rótulo del paso.
+ */
+export const route = {
+  intro: 'Si tenés poco tiempo, estas nueve secciones, en el orden de la encíclica, alcanzan para seguir el hilo. Cada una enlaza a su capítulo para seguir leyendo.',
+  steps: [
+    { from: 1, role: 'El punto de partida' },
+    { from: 4, role: 'Qué cambió' },
+    { from: 51, role: 'Qué vale una persona' },
+    { from: 92, role: 'El problema de fondo' },
+    { from: 102, role: 'Quién responde por la IA' },
+    { from: 118, role: 'El límite' },
+    { from: 151, role: 'El trabajo' },
+    { from: 197, role: 'La guerra' },
+    { from: 236, role: 'Cómo cerrar' },
   ],
 };
 

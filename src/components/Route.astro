@@ -1,0 +1,45 @@
+---
+import { route } from '../data/encyclical';
+import { leafAt, hitTitle } from '../lib/topics';
+import { rich, plain } from '../lib/rich';
+
+const steps = route.steps.map((st) => {
+  const hit = leafAt(st.from)!;
+  const { part } = hit;
+  const span = part.from === part.to ? `${part.from}` : `${part.from}–${part.to}`;
+  return { role: st.role, title: hitTitle(hit), chapter: hit.chapter.label, href: hit.href, span, summary: part.summary };
+});
+// ~180 palabras por minuto, sin contar las referencias §
+const words = steps.reduce((n, s) => n + plain(s.summary).replace(/§\s*[\d–,\s]+/g, '').split(/\s+/).filter(Boolean).length, 0);
+const minutes = Math.max(1, Math.round(words / 180));
+---
+<section id="ruta">
+  <div class="wrap">
+    <h2>Ruta corta</h2>
+    <p class="measure">{route.intro} Son unos {minutes} {minutes === 1 ? 'minuto' : 'minutos'} de lectura.</p>
+    <ol class="steps">
+      {steps.map((s, i) => (
+        <li>
+          <span class="n" aria-hidden="true">{i + 1}</span>
+          <div>
+            <p class="role">{s.role}</p>
+            <h3>{s.title}</h3>
+            <p class="summary" set:html={rich(s.summary)} />
+            <p class="more"><a href={s.href}>Seguir en {s.chapter}<span class="sr-only">: {s.title}</span> (§&nbsp;{s.span})</a></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+.steps{list-style:none;margin:28px 0 0;padding:0;max-width:46em}
+li{display:grid;grid-template-columns:44px 1fr;gap:0 16px;padding:20px 0;border-top:1px solid var(--rule)}
+.n{font-family:var(--display);font-stretch:110%;font-weight:750;font-size:1.6rem;line-height:1;color:var(--gold)}
+.role{font-family:var(--display);font-stretch:80%;font-weight:600;font-size:.85rem;color:var(--muted);margin:0 0 2px;text-transform:uppercase;letter-spacing:.04em}
+h3{margin:0 0 6px}
+.summary{margin:0 0 8px}
+.more{margin:0;font-family:var(--display);font-stretch:90%;font-size:.95rem}
+@media (max-width:520px){li{grid-template-columns:32px 1fr;gap:0 12px}}
+</style>
