@@ -1,0 +1,64 @@
+---
+import { antiqua, ANTIQUA_URL } from '../data/encyclical';
+import { rich } from '../lib/rich';
+---
+<section id="antiqua">
+  <div class="wrap">
+    <h2>Y <i>Antiqua et nova</i></h2>
+    <p class="measure" set:html={rich(antiqua.intro)} />
+    <ul class="kinds">
+      {antiqua.kinds.map((k) => <li><b>{k.name}</b><span>{k.text}</span></li>)}
+    </ul>
+    <div class="table" role="table" aria-label="Qué dice cada texto sobre los mismos temas">
+      <div class="head" role="row">
+        <span role="columnheader">Tema</span>
+        <span role="columnheader"><i>Antiqua et nova</i> (2025)</span>
+        <span role="columnheader"><i>Magnifica Humanitas</i> (2026)</span>
+      </div>
+      {antiqua.rows.map((r) => (
+        <div class="row" role="row">
+          <span class="topic" role="rowheader">{r.topic}</span>
+          <span class="an" role="cell">
+            <span class="lab" aria-hidden="true"><i>Antiqua et nova</i></span>
+            {r.an.text} <a class="para" href={ANTIQUA_URL} target="_blank" rel="noopener">¶&nbsp;{r.an.para}<span class="sr-only"> de Antiqua et nova, en vatican.va</span></a>
+          </span>
+          <span class="mh" role="cell">
+            <span class="lab" aria-hidden="true"><i>Magnifica Humanitas</i></span>
+            <span set:html={rich(r.mh)} />
+          </span>
+        </div>
+      ))}
+    </div>
+    <div class="adds">
+      <h3>{antiqua.adds.title}</h3>
+      <ul>
+        {antiqua.adds.items.map((t) => <li set:html={rich(t)} />)}
+      </ul>
+    </div>
+    <p class="note">Texto de la nota: <a href={ANTIQUA_URL} target="_blank" rel="noopener">vatican.va</a>. Sus párrafos se indican con ¶ para no confundirlos con los § de la encíclica.</p>
+  </div>
+</section>
+
+<style>
+.kinds{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.kinds li{border-top:2px solid var(--ink);padding:12px 0;display:flex;flex-direction:column;gap:4px;font-size:1rem}
+.kinds b{font-family:var(--display);font-stretch:95%;font-weight:650;font-size:1.1rem}
+.kinds span{color:var(--muted)}
+.table{margin-top:28px;border-top:2px solid var(--ink)}
+.head,.row{display:grid;grid-template-columns:150px 1fr 1fr;gap:0 32px}
+.head{padding:10px 0;border-bottom:1px solid var(--rule);font-family:var(--display);font-stretch:85%;font-weight:600;font-size:.9rem;color:var(--muted)}
+.row{padding:18px 0;border-bottom:1px solid var(--rule);font-size:1rem;line-height:1.55}
+.topic{font-family:var(--display);font-stretch:95%;font-weight:650;font-size:1.05rem;line-height:1.3}
+.lab{display:none;font-family:var(--display);font-stretch:80%;font-weight:600;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.para{font-family:var(--display);font-stretch:75%;font-size:.9rem;font-weight:600;color:var(--gold);white-space:nowrap}
+.adds{margin-top:36px;max-width:46em}
+.adds ul{margin:8px 0 0;padding-left:1.2em}
+.adds li{margin-bottom:.5em}
+.note{margin-top:24px;color:var(--muted);font-size:1rem}
+@media (max-width:820px){
+  .kinds{grid-template-columns:1fr}
+  .head{display:none}
+  .row{grid-template-columns:1fr;gap:10px}
+  .lab{display:block}
+}
+</style>

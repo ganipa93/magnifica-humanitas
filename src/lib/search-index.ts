@@ -1,5 +1,5 @@
 import {
-  sections, summary, twoCities, novelties, economy, tensions, quotes, claims, timeline,
+  sections, summary, twoCities, novelties, economy, tensions, quotes, claims, timeline, antiqua,
 } from '../data/encyclical';
 import { chapters, chapterRange, chapterHref, walk } from '../data/structure';
 import { parseRef, plain, refsIn } from './rich';
@@ -10,7 +10,7 @@ import { cited } from '../data/people';
 import { reception } from '../data/reception';
 
 export interface Entry {
-  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia' | 'Tema' | 'Glosario' | 'Cita' | 'Recepción';
+  kind: 'Sección' | 'Idea nueva' | 'Economía' | 'Tensión' | 'Capítulo' | 'Resumen' | 'Frase' | '¿Lo dice?' | 'Historia' | 'Tema' | 'Glosario' | 'Cita' | 'Recepción' | 'Antiqua et nova';
   title: string;
   /** Contexto (capítulo, sección madre) */
   where?: string;
@@ -55,6 +55,13 @@ export function buildIndex(): Entry[] {
 
   tensions.forEach((t, i) =>
     e.push({ kind: 'Tensión', title: t.title, href: `/#tension-${i + 1}`, text: plain(t.body), refs: refsIn(t.body) }),
+  );
+
+  antiqua.rows.forEach((r) =>
+    e.push({
+      kind: 'Antiqua et nova', title: r.topic, where: 'Comparación', href: `/#antiqua`,
+      text: plain(`${r.an.text} ${r.mh}`), refs: refsIn(r.mh),
+    }),
   );
 
   timeline.forEach((m, i) =>

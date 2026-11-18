@@ -26,10 +26,12 @@ export const sections = [
   { id: 'frase', label: 'En una frase' },
   { id: 'ruta', label: 'Ruta corta' },
   { id: 'temas', label: 'Por tema' },
+  { id: 'lectores', label: 'Según quién seas' },
   { id: 'babel', label: 'Babel o Jerusalén' },
   { id: 'nuevo', label: 'Lo nuevo' },
   { id: 'economia', label: 'Economía' },
   { id: 'tensiones', label: 'Tensiones' },
+  { id: 'antiqua', label: 'Antiqua et nova' },
   { id: 'recepcion', label: 'Cómo se leyó' },
   { id: 'historia', label: '135 años' },
   { id: 'citas', label: 'A quién cita' },
@@ -65,6 +67,86 @@ export const route = {
     { from: 197, role: 'La guerra' },
     { from: 236, role: 'Cómo cerrar' },
   ],
+};
+
+/**
+ * "Según quién seas": atajos por tipo de lector. Cada número es el párrafo
+ * inicial de una sección hoja (check-data lo verifica); los títulos y rangos
+ * salen de structure.ts. Solo es una selección, no agrega afirmaciones.
+ */
+export const audiences = [
+  { id: 'docentes', label: 'Docentes y familias', parts: [135, 139, 143, 165, 170] },
+  { id: 'tecnologia', label: 'Gente de tecnología', parts: [92, 100, 102, 173, 197] },
+  { id: 'trabajo', label: 'Empresas y trabajo', parts: [148, 151, 157, 65, 173] },
+  { id: 'gobierno', label: 'Gobiernos y organismos', parts: [68, 102, 201, 224, 197] },
+  { id: 'comunicacion', label: 'Periodismo y comunicación', parts: [132, 135, 137] },
+  { id: 'iglesia', label: 'Comunidades de fe', parts: [25, 86, 212] },
+];
+
+/**
+ * Comparación con la nota *Antiqua et nova* (Dicasterio para la Doctrina de la Fe
+ * y Dicasterio para la Cultura y la Educación, 28 de enero de 2025, aprobada por
+ * Francisco el 14 de enero de 2025; 117 párrafos). Lo que se dice de ella fue
+ * contrastado con el texto oficial; `para` es el número de párrafo de la nota.
+ * Lo que se dice de la encíclica usa la mini-sintaxis y se valida como el resto.
+ * Regla: entre comillas va solo texto literal; el resto, paráfrasis.
+ */
+export const ANTIQUA_URL =
+  'https://www.vatican.va/roman_curia/congregations/cfaith/documents/rc_ddf_doc_20250128_antiqua-et-nova_sp.html';
+
+export const antiqua = {
+  intro:
+    'En enero de 2025 el Vaticano ya había publicado una nota sobre la IA: *Antiqua et nova*, de dos dicasterios, aprobada por Francisco. Es la pregunta obvia de quien llega con algo de contexto: ¿qué dice una y qué agrega la otra? Esta tabla junta los temas en que ambos textos se encuentran. Es una lectura nuestra, no una comparación oficial, y no pretende ser exhaustiva.',
+  kinds: [
+    { name: 'Antiqua et nova', text: 'Nota de dos dicasterios de la Curia, de 117 párrafos, fechada el 28 de enero de 2025 y aprobada por el papa Francisco.' },
+    { name: 'Magnifica Humanitas', text: 'Encíclica del propio León XIV, de 245 párrafos, firmada el 15 de mayo de 2026.' },
+  ],
+  rows: [
+    {
+      topic: 'Responsabilidad',
+      an: { para: '44–46', text: 'Solo los agentes personales tienen plena causalidad moral: los fines de la IA los fijan personas, y quien la usa y sigue sus resultados también comparte la responsabilidad.' },
+      mh: 'Delegar en sistemas automáticos decisiones sobre trabajo, crédito o reputación puede crear nuevos descartes, y alguien tiene que rendir cuentas [§ 102–105]. Agrega tratar los datos como bien común y “desarmar” la IA [§ 108, 110].',
+    },
+    {
+      topic: 'Concentración del poder',
+      an: { para: '53, 68', text: 'Señala que el poder sobre las principales aplicaciones está concentrado en pocas y poderosas empresas, y advierte el riesgo de un beneficio desproporcionado para unos pocos.' },
+      mh: 'Es la pregunta de fondo: quién la controla y al servicio de qué [§ 5, 9]. Plataformas, datos, infraestructura y cómputo están en pocas manos privadas [§ 94–95].',
+    },
+    {
+      topic: 'Trabajo',
+      an: { para: '67, 70', text: 'Advierte que los trabajadores pueden verse obligados a adaptarse a la velocidad y las exigencias de las máquinas, y pide que la IA ayude al juicio humano y no lo sustituya.' },
+      mh: 'El trabajo es clave de la cuestión social [§ 148–150]. El temor a una pérdida rápida de empleos puede volverse una calamidad social y proteger el empleo es la norma general [§ 151–152]; pide formación continua [§ 156].',
+    },
+    {
+      topic: 'Guerra y armas autónomas',
+      an: { para: '100', text: 'Pide un control humano significativo de las armas letales autónomas: “Ninguna máquina debería elegir jamás poner fin a la vida de un ser humano”.' },
+      mh: 'Un capítulo entero, el 5, trata de la guerra, el multilateralismo y la paz [§ 182–228]. Sobre las armas con IA: ningún algoritmo puede volver la guerra moralmente aceptable, y no es lícito delegar en máquinas decisiones letales [§ 197–200].',
+    },
+    {
+      topic: 'Verdad y desinformación',
+      an: { para: '87–88', text: 'Describe los deepfakes, creados y difundidos de manera intencionada, y advierte que la desinformación puede socavar progresivamente los cimientos de la sociedad.' },
+      mh: 'Plataformas e IA multiplican la desinformación y borran la frontera entre verdadero y falso [§ 132–134]. Propone transparencia, protección de datos, periodismo serio y educación crítica [§ 137–138].',
+    },
+    {
+      topic: 'Educación',
+      an: { para: '79, 82', text: 'La presencia física del maestro crea una dinámica de relación que la IA no puede replicar, y la educación debería centrarse sobre todo en el pensamiento crítico.' },
+      mh: 'Educar en la IA es también educar para decidir [§ 139–142], y la escuela tiene un rol central [§ 143–147].',
+    },
+    {
+      topic: 'Sustituir a Dios',
+      an: { para: '105', text: 'Califica de idolatría la pretensión de reemplazar a Dios con una obra de las propias manos.' },
+      mh: 'Toda la encíclica está armada sobre Babel, la obra sin Dios hecha de uniformidad y autosuficiencia, frente a la ciudad compartida con Dios [§ 7–10].',
+    },
+  ],
+  adds: {
+    title: 'Qué agrega la encíclica',
+    items: [
+      'Es una encíclica del Papa y no una nota de dicasterios: cambia el rango del texto, no solo su extensión.',
+      'Relee desde adentro los principios de la Doctrina social (bien común, destino universal de los bienes, subsidiariedad, justicia social) a la luz de la IA [§ 17, 46].',
+      'Dedica un capítulo propio a la cultura del poder, la guerra y la paz [§ 182–228].',
+      'Aplica a la Iglesia misma un examen de transparencia y rendición de cuentas [§ 86–89].',
+    ],
+  },
 };
 
 export const twoCities = {

@@ -66,6 +66,14 @@ if (new Set(topics.map((t) => t.slug)).size !== topics.length) fail('Temas con s
   }
 }
 
+// Según quién seas: cada número es el inicio de una sección real
+for (const a of home.audiences)
+  for (const n of a.parts) if (!starts.has(n)) fail(`Lectores "${a.label}": § ${n} no es el inicio de ninguna sección`);
+
+// Antiqua et nova: la nota tiene 117 párrafos; los § de la encíclica se validan con el resto de la portada
+for (const r of home.antiqua.rows)
+  for (const n of parseRef(r.an.para)) if (n < 1 || n > 117) fail(`Antiqua et nova: ¶ ${n} fuera de 1–117 (${r.topic})`);
+
 // Glosario: ids únicos y cada término usado al menos una vez en el contenido
 if (new Set(glossary.map((g) => g.id)).size !== glossary.length) fail('Glosario con ids repetidos');
 const corpus = fold(JSON.stringify([home, chapters]));

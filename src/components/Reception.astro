@@ -1,11 +1,20 @@
 ---
 import { reception } from '../data/reception';
 import { rich } from '../lib/rich';
+
+// La fecha más reciente entre las lecturas: avisa hasta cuándo llega la selección
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const stamp = (d: string) => {
+  const m = d.match(/(\d{1,2}) de (\p{L}+) de (\d{4})/u);
+  return m ? new Date(+m[3]!, MONTHS.indexOf(m[2]!.toLowerCase()), +m[1]!).getTime() : 0;
+};
+const latest = reception.flatMap((s) => s.voices.map((v) => v.date)).reduce((a, b) => (stamp(b) > stamp(a) ? b : a));
 ---
 <section id="recepcion">
   <div class="wrap">
     <h2>Cómo se leyó</h2>
     <p class="measure">La encíclica recibió elogios y críticas desde lugares muy distintos. Acá están algunas lecturas representativas, resumidas con nuestras palabras y con el enlace para leerlas completas. Las opiniones son de sus autores; las tensiones que vemos nosotros están más arriba.</p>
+    <p class="asof">La selección llega hasta el {latest}.</p>
     <div class="stances">
       {reception.map((s) => (
         <section class="stance" aria-labelledby={`rec-${s.id}`}>
@@ -24,6 +33,7 @@ import { rich } from '../lib/rich';
 </section>
 
 <style>
+.asof{font-family:var(--display);font-stretch:90%;font-size:.95rem;color:var(--muted);margin:-4px 0 0}
 .stances{display:grid;grid-template-columns:1fr 1fr;gap:8px 48px;margin-top:28px}
 .stance{padding:0;border:0}
 h3{border-bottom:2px solid var(--ink);padding-bottom:6px;margin:12px 0 4px}
